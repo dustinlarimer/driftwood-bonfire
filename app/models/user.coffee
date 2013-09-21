@@ -1,9 +1,14 @@
+mediator = require 'mediator'
 Model = require 'models/base/model'
 Collection = require 'models/base/collection'
 
 module.exports = class User extends Model
-  urlKey: 'login'
-  
+  urlKey: 'handle'
+
+  #initialize: (data) ->
+  #  console.log 'User model created'
+  #  console.log data
+
   urlPath: ->
     '/users/'
 
@@ -22,4 +27,4 @@ module.exports = class User extends Model
 
   # Ideally, there should be a special model field for this.
   isAdmin: ->
-    @get('login') is 'larimer' or 'dustinlarimer'
+    @get('handle') is 'larimer' or 'dustinlarimer'

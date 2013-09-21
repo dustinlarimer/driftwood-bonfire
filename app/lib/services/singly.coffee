@@ -70,14 +70,14 @@ module.exports = class Singly extends ServiceProvider
     @publishEvent 'userData', response
 
   getLoginStatus: (callback = @loginStatusHandler, force = false) ->
-    console.log 'getLoginStatus'
+    #console.log 'getLoginStatus'
     if @accessToken?
       @getUserData().always(callback)
     else
 	    callback
 
   loginStatusHandler: (response, status) =>
-    console.log 'loginStatusHandler'
+    #console.log 'loginStatusHandler'
     if not response or status is 'error'
       console.log status
       @publishEvent 'logout'

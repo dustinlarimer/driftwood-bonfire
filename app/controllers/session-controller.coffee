@@ -40,6 +40,9 @@ module.exports = class SessionController extends Controller
     # Initiate logout
     @subscribeEvent '!logout', @triggerLogout
 
+    # Session User Loaded
+    @subscribeEvent 'userLoaded', @publishLogin
+
     # Determine the logged-in state
     @getSession()
 
@@ -91,9 +94,10 @@ module.exports = class SessionController extends Controller
     # Transform session into user attributes and create a user
     session.id = session.userId
     delete session.userId
-    @createUser session
-
-    @publishLogin()
+    #@createUser session
+    
+    #@publishLogin()
+    @publishEvent 'userSessionCreated', session
 
   # Publish an event to notify all application components of the login
   publishLogin: ->
