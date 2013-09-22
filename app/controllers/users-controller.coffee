@@ -12,6 +12,30 @@ module.exports = class UsersController extends Controller
     @profilesRef = Chaplin.mediator.firebase.child('profiles')
     @subscribeEvent 'userSessionCreated', @findOrCreateUser
 
+
+  # PUBLIC ROUTES
+  # -------------
+
+  show: (params) ->
+    @profilesRef.child(params.handle).once "value", (snapshot) =>
+      if snapshot.val()?
+        @model = new Profile snapshot.val()
+        @view = new UserPageView { model: @model, region: 'main' }
+        @view.render()
+
+      else
+        console.log '#404: this user does not exist'
+        # @view = new UserUnavailableView
+        # @view.render()
+
+  settings: (params) =>
+    console.log 'Settings'
+
+
+
+  # AUTHENTICATION / REGISTRATION ROUTES
+  # ------------------------------------
+
   findOrCreateUser: (data) =>
     console.log 'findOrCreateUser'
     console.log data
@@ -28,11 +52,10 @@ module.exports = class UsersController extends Controller
         if success
           console.log 'Created user ' + newUser.id
           @loadUser(newUser)
-          #@createProfile(data)
+          @newProfile(data) if Chaplin.mediator.user.get('profile') is ''
         else
           console.log 'User#' + newUser.id + ' already exists'
           @loadUser(snapshot.val())
-        @newProfile(data) if Chaplin.mediator.user.get('profile') is ''
 
   loadUser: (data) =>
     console.log 'loadUser'
@@ -67,109 +90,3 @@ module.exports = class UsersController extends Controller
         else
           console.log profile.handle + ' already exists'
           #return to newProfile w/ errors
-
-  ###
-  findOrCreateProfile: (data) =>
-    console.log 'Let\'s create a profile for User#' + data.id
-    #@model = {}
-    #@model = Chaplin.mediator.user
-    newProfile=
-      user_id: Chaplin.mediator.user.get('id')
-      display_name: data.name
-      handle: data.handle
-      avatar: data.thumbnail_url
-      title: ''
-      about: ''
-      url: ''
-      location: data.location
-    console.log newProfile
-    
-    @profilesRef.child(newProfile.handle).transaction ((currentProfileData) =>
-        newProfile if currentProfileData is null
-      ), (error, success, snapshot) =>
-        if success
-          console.log 'Profile created: ' + newProfile.handle
-          #@loadUser(newUser)
-          #@newProfile(newUser)
-        else
-          console.log newProfile.handle + ' already exists'
-          #@loadUser(snapshot.val())
- 
-    #console.log @model
-    #@view = new UserRegistrationView {model: @model, region: 'main'}
-    #@view.bind 'user:create', @createProfile
-    #@view.render()
-  ###
-
-
-  ###
-  findOrCreateProfile: (data) =>
-    console.log 'findOrCreateProfile'
-    console.log data
-    @profilesRef.child(newProfile.handle).transaction ((currentProfileData) =>
-        newProfile if currentProfileData is null
-      ), (error, success, snapshot) =>
-        if success
-          console.log 'Profile created: ' + newProfile.handle
-          #@loadUser(newUser)
-          #@newProfile(newUser)
-        else
-          console.log newProfile.handle + ' already exists'
-          #@loadUser(snapshot.val())
-  ###
-
-
-
-  # PUBLIC ROUTES
-  # ----------------
-
-  show: (params) ->
-    @usersRef.child(params.handle).once "value", (snapshot) =>
-      if snapshot.val()?
-        console.log 'user exists!'
-        console.log snapshot.val()
-        # @model = new User { handle: params.handle }
-        # @view = new UserPageView { model: @model, region: 'main' }
-        # @view.render()
-      else
-        console.log '#404: this user does not exist'
-        # @view = new UserUnavailableView
-        # @view.render()
-
-  settings: (params) =>
-    console.log 'Settings'
-
-
-
-  ###
-  lookupUser: (data) =>
-    @usersRef.child(data.handle).once "value", (snapshot) =>
-      if snapshot.val()?
-        @loadUser(data)
-      else 
-        #@redirectToRoute 'users#newUser', data 
-        @newUser(data)
-  
-  createUser: (data) =>
-    console.log 'createUser'
-    console.log data
-    #newUser = @usersRef.push(data.handle)
-    newUserAttributes=
-      id: data.id
-      name: data.name
-      location: data.location
-      handle: data.handle
-    
-    @usersRef.child(newUserAttributes.handle).transaction ((currentUserData) =>
-        newUserAttributes if currentUserData is null
-      ), (error, success) =>
-        unless success
-  	      console.log 'User ' + newUserAttributes.handle + ' already exists!'
-        else
-          console.log 'Successfully created user ' + newUserAttributes.handle
-
-    #newUser.set(newUserAttributes)
-    @loadUser(data)
-    @redirectToRoute 'home#index'
-  
-  ###

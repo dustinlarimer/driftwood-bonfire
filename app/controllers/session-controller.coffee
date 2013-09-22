@@ -127,7 +127,7 @@ module.exports = class SessionController extends Controller
     @serviceProviderName = null
 
     # Show the login view again
-    @showLoginView()
+    # @showLoginView()
 
     @publishEvent 'loginStatus', false
 

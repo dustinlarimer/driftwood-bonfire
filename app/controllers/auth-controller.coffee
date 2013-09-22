@@ -29,8 +29,9 @@ module.exports = class AuthController extends Controller
     @publishEvent '!showLogin'
 
   logout: =>
-    @redirectToRoute 'auth#login'
-    localStorage.clear()
+    localStorage.removeItem 'accessToken'
+    #localStorage.clear()
     @publishEvent '!logout'
+    @redirectToRoute 'home#index'
     #@publishEvent 'auth:setToken', null
     #window.location = window.location.pathname	

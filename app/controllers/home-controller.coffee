@@ -8,4 +8,5 @@ module.exports = class HomeController extends Controller
     @compose 'header', HeaderView, region: 'header'
 
   index: ->
+    console.log 'accessToken: ' + localStorage.getItem 'accessToken'
     @view = new HomePageView region: 'main'

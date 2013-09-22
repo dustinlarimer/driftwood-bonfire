@@ -30,7 +30,8 @@ module.exports = class Singly extends ServiceProvider
       '&service=' + loginContext + 
       '&response_type=token'
     if @accessToken?
-      singly_url = singly_url + '&access_token=' + @accessToken
+      console.log @accessToken
+      #singly_url = singly_url + '&access_token=' + @accessToken
     window.location = singly_url
   
   getUserData: ->
