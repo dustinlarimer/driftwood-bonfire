@@ -1,10 +1,10 @@
 {{#ifLoggedIn}}
   {{#withUser}}
-    <h3>
-      Logged in as <a href="{{url "users#show" handle}}">{{name}}</a>
+    <h5>
+      Logged in as <a href="{{url "users#show" handle}}">{{email}}</a>
       <small><a class="icon icon-logout" href="{{url "auth#logout"}}">Log out</a></small>
-    </h3>
+    </h5>
   {{/withUser}}
 {{else}}
-    <h3><a href="{{url "auth#login"}}">Log in</a></h3>
+    <h5><a href="{{url "auth#login"}}">Log in</a></h5>
 {{/ifLoggedIn}}

@@ -29,7 +29,7 @@ module.exports = class SessionController extends Controller
 
     # Handle login
     @subscribeEvent 'logout', @logout
-    @subscribeEvent 'userData', @userData
+    #@subscribeEvent 'userData', @userData
 
     # Handler events which trigger an action
 
@@ -51,9 +51,10 @@ module.exports = class SessionController extends Controller
     for name, serviceProvider of SessionController.serviceProviders
       serviceProvider.load()
 
-  # Instantiate the user with the given data
+  ### Instantiate the user with the given data
   createUser: (userData) ->
     Chaplin.mediator.user = new User userData
+  ###
 
   # Try to get an existing session from one of the login providers
   getSession: ->
@@ -133,10 +134,11 @@ module.exports = class SessionController extends Controller
 
   # Handler for the global userData event
   # -------------------------------------
-
+  ###
   userData: (data) ->
     Chaplin.mediator.user.set data
-
+  ###
+  
   # Disposal
   # --------
 

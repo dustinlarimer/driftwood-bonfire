@@ -27,7 +27,6 @@ module.exports = class AuthController extends Controller
 
   login: =>
     @publishEvent '!showLogin'
-    #@view = new LoginView region: 'main'
 
   logout: =>
     @redirectToRoute 'auth#login'
