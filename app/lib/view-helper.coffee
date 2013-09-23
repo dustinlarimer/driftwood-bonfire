@@ -4,18 +4,22 @@ utils = require 'lib/utils'
 
 # Application-specific view helpers
 # ---------------------------------
-
 # http://handlebarsjs.com/#helpers
+
+register = (name, fn) ->
+  Handlebars.registerHelper name, fn
+
 
 # Conditional evaluation
 # ----------------------
 
 # Choose block by user login status
-Handlebars.registerHelper 'ifLoggedIn', (options) ->
+register 'ifLoggedIn', (options) ->
   method = if Chaplin.mediator.user then options.fn else options.inverse
   method this
 
-Handlebars.registerHelper 'ifIsRepoAdmin', (options) ->
+###
+register 'ifIsRepoAdmin', (options) ->
   user = Chaplin.mediator.user
   return options.inverse(this) unless user
   orgs = user.get('organizations')?.pluck('login') ? []
@@ -25,7 +29,7 @@ Handlebars.registerHelper 'ifIsRepoAdmin', (options) ->
   else
     options.inverse(this)
 
-Handlebars.registerHelper 'ifCanEditPost', (options) ->
+register 'ifCanEditPost', (options) ->
   user = Chaplin.mediator.user
   return options.inverse(this) unless user
   orgs = user.get('organizations')?.pluck('login') ? []
@@ -37,7 +41,6 @@ Handlebars.registerHelper 'ifCanEditPost', (options) ->
   else
     options.inverse(this)
 
-###
 # Show keyboard short-cut for posting etc on OS X.
 Handlebars.registerHelper 'showShortcut', (options) ->
   if /mac/i.test(navigator.userAgent)
@@ -59,19 +62,19 @@ Handlebars.registerHelper 'showLoginUrl', ->
 # -----------
 
 # Make 'with' behave a little more mustachey
-Handlebars.registerHelper 'with', (context, options) ->
+register 'with', (context, options) ->
   if not context or Handlebars.Utils.isEmpty context
     options.inverse(this)
   else
     options.fn(context)
 
 # Make 'with' behave a little more mustachey
-Handlebars.registerHelper 'withConfig', (options) ->
+register 'withConfig', (options) ->
   context = config
   Handlebars.helpers.with.call(this, context, options)
 
 # Evaluate block with context being current user
-Handlebars.registerHelper 'withUser', (options) ->
+register 'withUser', (options) ->
   context = Chaplin.mediator.user.getAttributes()
   Handlebars.helpers.with.call(this, context, options)
 
@@ -82,7 +85,7 @@ Handlebars.registerHelper 'gravatar', (options) ->
 %2Fimages%2Fgravatars%2Fgravatar-140.png"
 ###
 
-Handlebars.registerHelper 'date', (options) ->
+register 'date', (options) ->
   date = new Date options.fn this
   new Handlebars.SafeString moment(date).fromNow()
 
@@ -134,5 +137,5 @@ Handlebars.registerHelper 'markdown', (options) ->
   new Handlebars.SafeString markdown
 ###
 
-Handlebars.registerHelper 'url', (routeName, params..., options) ->
+register 'url', (routeName, params..., options) ->
   Chaplin.helpers.reverse routeName, params

@@ -38,14 +38,10 @@ module.exports = class Singly extends ServiceProvider
     @ajax 'get', '/profile'
   
   getLoginStatus: (callback = @loginStatusHandler, force = false) ->
-    if @accessToken?
-      @getUserData().always(callback)
-    else
-	    callback
+    @getUserData().always(@loginStatusHandler) if @accessToken?
 
   loginStatusHandler: (response, status) =>
     if not response or status is 'error'
-      console.log status
       @publishEvent 'logout'
     else
       parsed = User::parse.call(null, response)

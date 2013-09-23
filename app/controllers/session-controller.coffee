@@ -1,4 +1,6 @@
 config = require 'config'
+utils = require 'lib/utils'
+
 Controller = require 'controllers/base/controller'
 User = require 'models/user'
 Singly = require 'lib/services/singly'
@@ -24,6 +26,7 @@ module.exports = class SessionController extends Controller
   serviceProviderName: null
 
   initialize: ->
+    console.log 'Session Controller is here'
     
     # Firebase References
     @usersRef = Chaplin.mediator.firebase.child('users')
@@ -114,9 +117,9 @@ module.exports = class SessionController extends Controller
 
   findOrCreateUser: (data) =>
     console.log 'findOrCreateUser:'
-    newUser=        # Grab the attributes you want for this user's record...
-      id: data.id   # Singly will always return the same ID
-      profile: ''   # data.handle OR user-selected, used to retrieve profile resources via "/:handle" routes
+    newUser=         # Grab the attributes you want for this user's record...
+      id: data.id    # Singly will always return the same ID
+      #profile_id: '' # data.handle OR user-selected, used to retrieve profile resources via "/:handle" routes
 
     if data.email?
       newUser.email = data.email
@@ -127,10 +130,13 @@ module.exports = class SessionController extends Controller
         if success
           console.log 'Created user ' + newUser.id
           @loadUser(newUser)
-          @publishEvent 'userRegistered', data #if Chaplin.mediator.user.get('profile') is ''
         else
           console.log 'User#' + newUser.id + ' already exists'
           @loadUser(snapshot.val())
+
+        unless Chaplin.mediator.user.get('profile_id')?
+          @redirectTo 'users#setup', data
+          #@publishEvent 'userRegistered', data
 
   loadUser: (data) =>
     console.log 'loadUser()'

@@ -13,7 +13,7 @@ module.exports = class AuthController extends Controller
       mediator.firebase.auth params.firebase, (err, authData) =>
         unless err
           @publishEvent 'setAccessToken', params.access_token
-          @redirectToRoute 'home#index'
+          @redirectTo 'home#index'
           window.location = window.location.pathname
         else
           alert "Could not authenticate: " + err.message
@@ -27,9 +27,6 @@ module.exports = class AuthController extends Controller
     @publishEvent '!showLogin'
 
   logout: =>
-    #localStorage.removeItem 'accessToken'
-    #localStorage.clear()
     @publishEvent '!logout'
-    @redirectToRoute 'home#index'
-    #@publishEvent 'auth:setToken', null
+    @redirectTo 'home#index'
     #window.location = window.location.pathname	
