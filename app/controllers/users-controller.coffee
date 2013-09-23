@@ -10,8 +10,8 @@ module.exports = class UsersController extends Controller
   initialize: ->
     @usersRef = Chaplin.mediator.firebase.child('users')
     @profilesRef = Chaplin.mediator.firebase.child('profiles')
-    @subscribeEvent 'userSessionCreated', @findOrCreateUser
-
+    @subscribeEvent 'userRegistered', @newProfile
+    #console.log 'Users Controller is here'
 
   # PUBLIC ROUTES
   # -------------
@@ -22,7 +22,6 @@ module.exports = class UsersController extends Controller
         @model = new Profile snapshot.val()
         @view = new UserPageView { model: @model, region: 'main' }
         @view.render()
-
       else
         console.log '#404: this user does not exist'
         # @view = new UserUnavailableView
@@ -35,7 +34,7 @@ module.exports = class UsersController extends Controller
 
   # AUTHENTICATION / REGISTRATION ROUTES
   # ------------------------------------
-
+  ###
   findOrCreateUser: (data) =>
     console.log 'findOrCreateUser'
     console.log data
@@ -61,25 +60,30 @@ module.exports = class UsersController extends Controller
     console.log 'loadUser'
     Chaplin.mediator.user = new User data
     @publishEvent 'userLoaded'
+  ###
 
-  newProfile: (data) =>
-    console.log 'Let\'s create a profile for User#' + data.id
+  newProfile: (params) =>
+    console.log params
+    console.log 'Let\'s create a profile for User#' + params.id
     newProfile=
       user_id: Chaplin.mediator.user.get('id')
-      display_name: data.name
-      handle: data.handle
-      avatar: data.thumbnail_url
+      display_name: params.name
+      handle: params.handle
+      avatar: params.thumbnail_url
       about: ''
       url: ''
-      location: data.location
+      location: params.location
     @model = new Profile newProfile
     @view = new UserRegistrationView {model: @model, region: 'main'}
-    @view.bind 'user:create', @createProfile
+    @view.bind 'user:create', (data) =>
+      @createProfile(data)
+      @view.dispose()
     @view.render()
   
   createProfile: (profile) =>
     console.log 'createProfile'
     _profile = _.omit(profile, 'handle')
+    _profile.user_id = Chaplin.mediator.user.get('id')
     @profilesRef.child(profile.handle).transaction ((currentProfileData) =>
         _profile if currentProfileData is null
       ), (error, success, snapshot) =>

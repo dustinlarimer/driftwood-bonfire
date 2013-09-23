@@ -5,7 +5,7 @@ module.exports = (match) ->
   match 'auth-callback', 'auth#callback'
   match 'login', 'auth#login'
   match 'logout', 'auth#logout'
-  #match 'join', 'users#newProfile'
+  match 'join', 'users#newProfile'
   #match 'create', 'users#createUser'
   match 'settings', 'users#settings'
 

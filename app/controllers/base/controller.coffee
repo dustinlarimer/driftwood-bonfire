@@ -11,9 +11,12 @@ module.exports = class Controller extends Chaplin.Controller
     #@compose 'header', HeaderView
     @compose 'auth', ->
       SessionController = require 'controllers/session-controller'
-      UsersController = require 'controllers/users-controller'
+      #UsersController = require 'controllers/users-controller'
       @controller = new SessionController
-      @users = new UsersController
+      #@users = new UsersController
+    @compose 'users', ->
+      UsersController = require 'controllers/users-controller'
+      @controller = new UsersController
 
     ###if route.name in ['users#show', 'repos#show', 'topics#show']
       @compose 'navigation', ->

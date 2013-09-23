@@ -24,6 +24,11 @@ module.exports = class SessionController extends Controller
   serviceProviderName: null
 
   initialize: ->
+    
+    # Firebase References
+    @usersRef = Chaplin.mediator.firebase.child('users')
+    @profilesRef = Chaplin.mediator.firebase.child('profiles')
+    
     # Login flow events
     @subscribeEvent 'serviceProviderSession', @serviceProviderSession
 
@@ -32,6 +37,7 @@ module.exports = class SessionController extends Controller
     #@subscribeEvent 'userData', @userData
 
     # Handler events which trigger an action
+    @subscribeEvent 'setAccessToken', @setAccessToken
 
     # Show the login dialog
     @subscribeEvent '!showLogin', @showLoginView
@@ -45,6 +51,13 @@ module.exports = class SessionController extends Controller
 
     # Determine the logged-in state
     @getSession()
+
+
+  setAccessToken: (access_token) =>
+    localStorage.setItem 'accessToken', access_token
+  
+  removeAccessToken: =>
+    localStorage.removeItem 'accessToken'
 
   # Load the libraries of all service providers
   loadServiceProviders: ->
@@ -90,15 +103,40 @@ module.exports = class SessionController extends Controller
     @serviceProviderName = session.provider.name
 
     # Hide the login view
-    @disposeLoginView()
+    #@disposeLoginView()
 
     # Transform session into user attributes and create a user
     session.id = session.userId
     delete session.userId
-    #@createUser session
     
-    #@publishLogin()
-    @publishEvent 'userSessionCreated', session
+    @findOrCreateUser session
+
+
+  findOrCreateUser: (data) =>
+    console.log 'findOrCreateUser:'
+    newUser=        # Grab the attributes you want for this user's record...
+      id: data.id   # Singly will always return the same ID
+      profile: ''   # data.handle OR user-selected, used to retrieve profile resources via "/:handle" routes
+
+    if data.email?
+      newUser.email = data.email
+
+    @usersRef.child(newUser.id).transaction ((currentUserData) =>
+        newUser if currentUserData is null
+      ), (error, success, snapshot) =>
+        if success
+          console.log 'Created user ' + newUser.id
+          @loadUser(newUser)
+          @publishEvent 'userRegistered', data #if Chaplin.mediator.user.get('profile') is ''
+        else
+          console.log 'User#' + newUser.id + ' already exists'
+          @loadUser(snapshot.val())
+
+  loadUser: (data) =>
+    console.log 'loadUser()'
+    Chaplin.mediator.user = new User data
+    @publishLogin()
+
 
   # Publish an event to notify all application components of the login
   publishLogin: ->
@@ -119,8 +157,8 @@ module.exports = class SessionController extends Controller
 
   # Handler for the global logout event
   logout: =>
+    @removeAccessToken()
     @loginStatusDetermined = true
-
     @disposeUser()
 
     # Discard the login info
