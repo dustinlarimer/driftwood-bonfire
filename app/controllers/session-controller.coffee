@@ -86,16 +86,14 @@ module.exports = class SessionController extends Controller
 
   # Handler for the global !showLogin event
   showLoginView: (redirect_data) ->
-    @redirect = params: redirect_data.params, route: redirect_data.route if redirect_data?
     return if @loginView
     @loadServiceProviders()
-    if @redirect.params? or @redirect.route?
-      if @getAccessToken()?
-        @loginView = new LoggingInView region: 'main'
-    else
-      @loginView = new LoginView region: 'main', serviceProviders: SessionController.serviceProviders
 
-    #@loginView = new LoginView region: 'main', serviceProviders: SessionController.serviceProviders
+    @redirect = params: redirect_data.params, route: redirect_data.route if redirect_data?
+    if @redirect.params? or @redirect.route?
+      return @loginView = new LoggingInView region: 'main' if @getAccessToken()?
+    @loginView = new LoginView region: 'main', serviceProviders: SessionController.serviceProviders
+
 
   # Handler for the global !login event
   # Delegate the login to the selected service provider
