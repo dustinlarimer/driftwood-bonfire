@@ -2,6 +2,8 @@ config = require 'config'
 mediator = require 'mediator'
 Layout = require 'views/layout'
 
+SessionController = require 'controllers/session-controller'
+
 module.exports = class Application extends Chaplin.Application
 
   initLayout: (options = {}) ->

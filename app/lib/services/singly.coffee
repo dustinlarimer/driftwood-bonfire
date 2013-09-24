@@ -29,16 +29,14 @@ module.exports = class Singly extends ServiceProvider
       '&redirect_uri=' + config.singly.redirectURI + 
       '&service=' + loginContext + 
       '&response_type=token'
-    if @accessToken?
-      console.log @accessToken
-      #singly_url = singly_url + '&access_token=' + @accessToken
+    #singly_url = singly_url + '&access_token=' + @accessToken if @accessToken?
     window.location = singly_url
   
   getUserData: ->
     @ajax 'get', '/profile'
   
   getLoginStatus: (callback = @loginStatusHandler, force = false) ->
-    @getUserData().always(@loginStatusHandler) if @accessToken?
+    @getUserData().always(callback) if @accessToken?
 
   loginStatusHandler: (response, status) =>
     if not response or status is 'error'

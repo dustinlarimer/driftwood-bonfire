@@ -129,17 +129,17 @@ module.exports = class SessionController extends Controller
       ), (error, success, snapshot) =>
         if success
           console.log 'Created user ' + newUser.id
-          @loadUser(newUser)
+          @loadSessionUser(newUser)
         else
           console.log 'User#' + newUser.id + ' already exists'
-          @loadUser(snapshot.val())
+          @loadSessionUser(snapshot.val())
 
         unless Chaplin.mediator.user.get('profile_id')?
           @redirectTo 'users#setup', data
           #@publishEvent 'userRegistered', data
 
-  loadUser: (data) =>
-    console.log 'loadUser()'
+  loadSessionUser: (data) =>
+    console.log 'loadSessionUser:'
     Chaplin.mediator.user = new User data
     @publishLogin()
 

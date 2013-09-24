@@ -21,23 +21,36 @@ module.exports = class UsersController extends Controller
       if snapshot.val()?
         @model = new Profile snapshot.val()
         @view = new UserPageView { model: @model, region: 'main' }
-        @view.render()
       else
-        console.log '#404: this user does not exist'
+        console.log 'User does not exist'
         # @view = new UserUnavailableView
         # @view.render()
 
 
-  _settings: ->
+  _settings: (params) ->
+    @username = params.get('profile_id')
     console.log '_settings'
-    @model = Chaplin.mediator.user
-    @view = new UserSettingsView {model: @model}
+    @profilesRef.child(@username).once "value", (snapshot) =>
+      if snapshot.val()?
+        @model = new Profile snapshot.val()
+        @view = new UserSettingsView { model: @model, region: 'main' }
+        @view.bind 'profile:update', (data) =>
+          @profilesRef.child(@username).update 
+            display_name: data.display_name
+            location: data.location
+            about: data.about
+            url: data.url
+          , (error) =>
+            unless error?
+              @redirectTo 'users#show', [@username]
+            else
+              alert 'error!' + error.message
 
   settings: (params) ->
     console.log 'settings'
     if Chaplin.mediator.user?
       if Chaplin.mediator.user.get('profile_id')?
-        @_settings
+        @_settings(params)
       else
         console.log Chaplin.mediator.user.get('profile_id')
         @redirectTo 'users#setup'
