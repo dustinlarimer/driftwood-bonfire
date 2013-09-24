@@ -7,7 +7,7 @@ module.exports = class Controller extends Chaplin.Controller
     @compose 'auth', ->
       SessionController = require 'controllers/session-controller'
       @controller = new SessionController
-  
+
   requireLogin: (params, route) ->
     if Chaplin.mediator.user?
       if !Chaplin.mediator.user.get('profile_id')?

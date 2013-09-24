@@ -11,14 +11,13 @@ module.exports = class UsersController extends Controller
   beforeAction: (params, route) ->
     super
     if route.action in ['settings']
-      @requireLogin(params, route)
+      return @requireLogin(params, route)
 
   initialize: ->
     super
     @usersRef = Chaplin.mediator.firebase.child('users')
     @profilesRef = Chaplin.mediator.firebase.child('profiles')
     @subscribeEvent 'userRegistered', @join
-    console.log 'Users Controller is here'
 
 
   show: (params) ->
@@ -32,7 +31,6 @@ module.exports = class UsersController extends Controller
         # @view.render()
 
   settings: ->
-    console.log Chaplin.mediator.user
     _username = Chaplin.mediator.user.get('profile_id')
     @profilesRef.child(_username).once "value", (snapshot) =>
       if snapshot.val()?
@@ -52,7 +50,7 @@ module.exports = class UsersController extends Controller
   
   join: (params) ->
     if !params.id?
-      @redirectTo 'auth#login'
+      @redirectTo 'home#index'
       return false
     console.log 'Let\'s create a profile for User#' + params.id + ':'
     @model = new Profile {display_name: params.name, handle: params.handle}    
@@ -70,6 +68,7 @@ module.exports = class UsersController extends Controller
           console.log '[SUCCESS] Profile created: ' + snapshot.name()
           @usersRef.child(Chaplin.mediator.user.get('id')).child('profile_id').set(snapshot.name())
           @redirectTo 'home#index'
+          window.location = window.location.pathname
         else
           console.log '[ERROR] ' + data.handle + ' already exists'
           @view.render()

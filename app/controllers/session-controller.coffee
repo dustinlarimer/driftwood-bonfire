@@ -5,8 +5,9 @@ Singly = require 'lib/services/singly'
 Controller = require 'controllers/base/controller'
 User = require 'models/user'
 Profile = require 'models/profile'
+
 LoginView = require 'views/login-view'
-UserSetupView = require 'views/user/user-setup-view'
+LoggingInView = require 'views/logging-in-view'
 
 module.exports = class SessionController extends Controller
   # Service provider instances as static properties
@@ -16,7 +17,6 @@ module.exports = class SessionController extends Controller
     singly: new Singly()
     # facebook: new Facebook()
   }
-  #@serviceProviders = config.singly.providers
 
   # Was the login status already determined?
   loginStatusDetermined: false
@@ -30,7 +30,6 @@ module.exports = class SessionController extends Controller
   redirect: null
 
   initialize: ->
-    console.log 'Session Controller is here'
     
     # Firebase References
     @usersRef = Chaplin.mediator.firebase.child('users')
@@ -58,10 +57,13 @@ module.exports = class SessionController extends Controller
 
     # Determine the logged-in state
     @getSession()
-
+    #console.log @getAccessToken()
 
   setAccessToken: (access_token) =>
     localStorage.setItem 'accessToken', access_token
+
+  getAccessToken: ->
+    return localStorage.getItem 'accessToken'
   
   removeAccessToken: =>
     localStorage.removeItem 'accessToken'
@@ -83,11 +85,17 @@ module.exports = class SessionController extends Controller
       serviceProvider.done serviceProvider.getLoginStatus
 
   # Handler for the global !showLogin event
-  showLoginView: (redirect) ->
-    @redirect = params: redirect.params, route: redirect.route if redirect?
+  showLoginView: (redirect_data) ->
+    @redirect = params: redirect_data.params, route: redirect_data.route if redirect_data?
     return if @loginView
     @loadServiceProviders()
-    @loginView = new LoginView region: 'main', serviceProviders: SessionController.serviceProviders
+    if @redirect.params? or @redirect.route?
+      if @getAccessToken()?
+        @loginView = new LoggingInView region: 'main'
+    else
+      @loginView = new LoginView region: 'main', serviceProviders: SessionController.serviceProviders
+
+    #@loginView = new LoginView region: 'main', serviceProviders: SessionController.serviceProviders
 
   # Handler for the global !login event
   # Delegate the login to the selected service provider
@@ -121,7 +129,7 @@ module.exports = class SessionController extends Controller
 
 
   findOrCreateUser: (data) =>
-    console.log 'findOrCreateUser:'
+    console.log 'findOrCreateUser: (data) =>'
     newUser=         # Grab the attributes you want for this user's record...
       id: data.id    # Singly will always return the same ID
       #profile_id: '' # data.handle OR user-selected, used to retrieve profile resources via "/:handle" routes
@@ -143,7 +151,7 @@ module.exports = class SessionController extends Controller
           @redirectTo 'users#join', data
 
   loadSessionUser: (data) =>
-    console.log 'loadSessionUser:'
+    console.log 'loadSessionUser: (data) =>'
     Chaplin.mediator.user = new User data
     @publishLogin()
     

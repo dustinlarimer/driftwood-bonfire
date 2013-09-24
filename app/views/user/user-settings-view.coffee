@@ -8,7 +8,6 @@ module.exports = class UserSettingsView extends PageView
   initialize: ->
     super
     @delegate 'click', 'button', @sendForm
-    console.log @model
   
   sendForm: =>
     data=
