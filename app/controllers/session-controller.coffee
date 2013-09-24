@@ -1,10 +1,12 @@
 config = require 'config'
 utils = require 'lib/utils'
+Singly = require 'lib/services/singly'
 
 Controller = require 'controllers/base/controller'
 User = require 'models/user'
-Singly = require 'lib/services/singly'
+Profile = require 'models/profile'
 LoginView = require 'views/login-view'
+UserSetupView = require 'views/user/user-setup-view'
 
 module.exports = class SessionController extends Controller
   # Service provider instances as static properties
@@ -24,6 +26,8 @@ module.exports = class SessionController extends Controller
 
   # Current service provider
   serviceProviderName: null
+
+  redirect: null
 
   initialize: ->
     console.log 'Session Controller is here'
@@ -79,7 +83,8 @@ module.exports = class SessionController extends Controller
       serviceProvider.done serviceProvider.getLoginStatus
 
   # Handler for the global !showLogin event
-  showLoginView: ->
+  showLoginView: (redirect) ->
+    @redirect = params: redirect.params, route: redirect.route if redirect?
     return if @loginView
     @loadServiceProviders()
     @loginView = new LoginView region: 'main', serviceProviders: SessionController.serviceProviders
@@ -106,7 +111,7 @@ module.exports = class SessionController extends Controller
     @serviceProviderName = session.provider.name
 
     # Hide the login view
-    #@disposeLoginView()
+    @disposeLoginView() if @redirect?.route?
 
     # Transform session into user attributes and create a user
     session.id = session.userId
@@ -128,21 +133,20 @@ module.exports = class SessionController extends Controller
         newUser if currentUserData is null
       ), (error, success, snapshot) =>
         if success
-          console.log 'Created user ' + newUser.id
-          @loadSessionUser(newUser)
+          console.log 'Created user ' + snapshot.name()
+          @loadSessionUser(snapshot.val())
         else
           console.log 'User#' + newUser.id + ' already exists'
           @loadSessionUser(snapshot.val())
 
         unless Chaplin.mediator.user.get('profile_id')?
-          @redirectTo 'users#setup', data
-          #@publishEvent 'userRegistered', data
+          @redirectTo 'users#join', data
 
   loadSessionUser: (data) =>
     console.log 'loadSessionUser:'
     Chaplin.mediator.user = new User data
     @publishLogin()
-
+    
 
   # Publish an event to notify all application components of the login
   publishLogin: ->
@@ -151,7 +155,8 @@ module.exports = class SessionController extends Controller
     # Publish a global login event passing the user
     @publishEvent 'login', Chaplin.mediator.user
     @publishEvent 'loginStatus', true
-
+    
+    @redirectTo @redirect.route.name if @redirect?.route?
 
   # Logout
   # ------

@@ -8,11 +8,16 @@ UserSetupView = require 'views/user/user-setup-view'
 
 module.exports = class UsersController extends Controller
 
+  beforeAction: (params, route) ->
+    super
+    if route.action in ['settings']
+      @requireLogin(params, route)
+
   initialize: ->
     super
     @usersRef = Chaplin.mediator.firebase.child('users')
     @profilesRef = Chaplin.mediator.firebase.child('profiles')
-    @subscribeEvent 'userRegistered', @setup
+    @subscribeEvent 'userRegistered', @join
     console.log 'Users Controller is here'
 
 
@@ -26,49 +31,34 @@ module.exports = class UsersController extends Controller
         # @view = new UserUnavailableView
         # @view.render()
 
-
-  _settings: (params) ->
-    @username = params.get('profile_id')
-    console.log '_settings'
-    @profilesRef.child(@username).once "value", (snapshot) =>
+  settings: ->
+    console.log Chaplin.mediator.user
+    _username = Chaplin.mediator.user.get('profile_id')
+    @profilesRef.child(_username).once "value", (snapshot) =>
       if snapshot.val()?
         @model = new Profile snapshot.val()
         @view = new UserSettingsView { model: @model, region: 'main' }
         @view.bind 'profile:update', (data) =>
-          @profilesRef.child(@username).update 
+          @profilesRef.child(_username).update 
             display_name: data.display_name
             location: data.location
             about: data.about
             url: data.url
           , (error) =>
             unless error?
-              @redirectTo 'users#show', [@username]
+              @redirectTo 'users#show', [_username]
             else
               alert 'error!' + error.message
-
-  settings: (params) ->
-    console.log 'settings'
-    if Chaplin.mediator.user?
-      if Chaplin.mediator.user.get('profile_id')?
-        @_settings(params)
-      else
-        console.log Chaplin.mediator.user.get('profile_id')
-        @redirectTo 'users#setup'
-    else
-      @subscribeEvent 'login', @_settings
-
-
-  setup: (params) =>
-    # Bail if direct-linked
-    return @redirectTo 'home#index' unless Chaplin.mediator.user?
-      
+  
+  join: (params) ->
+    if !params.id?
+      @redirectTo 'auth#login'
+      return false
     console.log 'Let\'s create a profile for User#' + params.id + ':'
-    console.log params
-
     @model = new Profile {display_name: params.name, handle: params.handle}    
     @view = new UserSetupView {model: @model, region: 'main'}
+    
     @view.bind 'user:create', (data) =>
-      console.log 'Creating user profile...'
       newProfile=
         display_name: data.display_name
         user_id: Chaplin.mediator.user.get('id')
@@ -77,8 +67,8 @@ module.exports = class UsersController extends Controller
         newProfile if currentProfileData is null
       ), (error, success, snapshot) =>
         if success
-          console.log '[SUCCESS] Profile created: ' + data.handle
-          @usersRef.child(Chaplin.mediator.user.get('id')).child('profile_id').set(data.handle)
+          console.log '[SUCCESS] Profile created: ' + snapshot.name()
+          @usersRef.child(Chaplin.mediator.user.get('id')).child('profile_id').set(snapshot.name())
           @redirectTo 'home#index'
         else
           console.log '[ERROR] ' + data.handle + ' already exists'

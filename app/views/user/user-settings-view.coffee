@@ -2,6 +2,7 @@ PageView = require '../base/view'
 
 module.exports = class UserSettingsView extends PageView
   autoRender: true
+  containerMethod: 'html'
   template: require './templates/user-settings'
   
   initialize: ->

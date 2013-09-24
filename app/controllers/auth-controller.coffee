@@ -23,10 +23,9 @@ module.exports = class AuthController extends Controller
     else
       @redirectToRoute 'auth#login'
 
-  login: =>
-    @publishEvent '!showLogin'
+  login: (params) =>
+    @publishEvent '!showLogin', params
 
   logout: =>
     @publishEvent '!logout'
     @redirectTo 'home#index'
-    #window.location = window.location.pathname	

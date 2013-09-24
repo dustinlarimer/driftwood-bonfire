@@ -5,7 +5,7 @@ module.exports = (match) ->
   match 'login', 'auth#login'
   match 'logout', 'auth#logout'
   match 'settings', 'users#settings'
-  match 'join', 'users#setup'
+  match 'join', 'users#join'
 
   #match 'browse', 'canvases#index'
   #match ':id', 'canvases#show', constraints: {id: /^\d+$/}
