@@ -53,24 +53,29 @@ module.exports = class UsersController extends Controller
       @redirectTo 'home#index'
       return false
     console.log 'Let\'s create a profile for User#' + params.id + ':'
-    @model = new Profile {display_name: params.name, handle: params.handle}    
-    @view = new UserSetupView {model: @model, region: 'main'}
     
+    @model = new Profile {display_name: params.name, handle: params.handle}    
+    @view = new UserSetupView {model: @model, region: 'main'}    
     @view.bind 'user:create', (data) =>
       newProfile=
         display_name: data.display_name
         user_id: Chaplin.mediator.user.get('id')
-      
       @profilesRef.child(data.handle).transaction ((currentProfileData) =>
-        newProfile if currentProfileData is null
-      ), (error, success, snapshot) =>
-        if success
-          console.log '[SUCCESS] Profile created: ' + snapshot.name()
-          @usersRef.child(Chaplin.mediator.user.get('id')).child('profile_id').set(snapshot.name())
-          @redirectTo 'home#index'
-          window.location = window.location.pathname
-        else
-          console.log '[ERROR] ' + data.handle + ' already exists'
-          @view.render()
+          newProfile if currentProfileData is null
+        ), (error, success, snapshot) =>
+          if success
+            console.log '[SUCCESS] Profile created: ' + snapshot.name()
+            #@usersRef.child(Chaplin.mediator.user.get('id')).child('profile_id').set(snapshot.name())
+            Chaplin.mediator.user.save profile_id: data.handle
+            @redirectTo 'home#index'
+            window.location = window.location.pathname
+          else
+            console.log '[ERROR] ' + data.handle + ' already exists'
+            @view.render()
+      
+      #profile = new Profile newProfile.handle
+      #profile.save newProfile
+      #Chaplin.mediator.user.save profile_id: newProfile.handle
+
       @view.dispose()
     @view.render()

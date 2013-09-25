@@ -134,7 +134,7 @@ module.exports = class SessionController extends Controller
 
     if data.email?
       newUser.email = data.email
-
+    
     @usersRef.child(newUser.id).transaction ((currentUserData) =>
         newUser if currentUserData is null
       ), (error, success, snapshot) =>
@@ -150,7 +150,8 @@ module.exports = class SessionController extends Controller
 
   loadSessionUser: (data) =>
     console.log 'loadSessionUser: (data) =>'
-    Chaplin.mediator.user = new User data
+    Chaplin.mediator.user = new User data.id
+    Chaplin.mediator.user.save data
     @publishLogin()
     
 

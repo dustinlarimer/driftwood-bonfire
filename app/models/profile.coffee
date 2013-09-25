@@ -1,5 +1,5 @@
-Model = require 'models/base/model'
-Collection = require 'models/base/collection'
+config = require 'config'
+FirebaseModel = require 'models/base/firebase-model'
 
-module.exports = class Profile extends Model
-  idAttribute: 'user_id'
+module.exports = class Profile extends FirebaseModel
+  firebase: new Backbone.Firebase(config.firebase + '/profiles')
