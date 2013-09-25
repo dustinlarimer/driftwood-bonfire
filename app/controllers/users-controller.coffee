@@ -32,7 +32,7 @@ module.exports = class UsersController extends Controller
 
   settings: ->
     _username = Chaplin.mediator.user.get('profile_id')
-    @profilesRef.child(_username).once "value", (snapshot) =>
+    @profilesRef.child(_username).on "value", (snapshot) =>
       if snapshot.val()?
         @model = new Profile snapshot.val()
         @view = new UserSettingsView { model: @model, region: 'main' }

@@ -137,5 +137,5 @@ Handlebars.registerHelper 'markdown', (options) ->
   new Handlebars.SafeString markdown
 ###
 
-register 'url', (routeName, params..., options) ->
+register 'route', (routeName, params..., options) ->
   Chaplin.helpers.reverse routeName, params

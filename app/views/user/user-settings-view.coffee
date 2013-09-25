@@ -7,7 +7,10 @@ module.exports = class UserSettingsView extends PageView
   
   initialize: ->
     super
-    @delegate 'click', 'button', @sendForm
+    @delegate 'submit', 'form', @sendForm
+  
+  listen:
+    'model change': 'render'
       
   sendForm: =>
     data=
@@ -16,3 +19,4 @@ module.exports = class UserSettingsView extends PageView
       location: @$('input#location').val()
       url: @$('input#url').val()
     @trigger 'profile:update', data
+    return false
