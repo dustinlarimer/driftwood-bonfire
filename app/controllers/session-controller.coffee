@@ -127,7 +127,7 @@ module.exports = class SessionController extends Controller
 
 
   findOrCreateUser: (data) =>
-    console.log 'findOrCreateUser: (data) =>'
+    #console.log 'findOrCreateUser: (data) =>'
     newUser=         # Grab the attributes you want for this user's record...
       id: data.id    # Singly will always return the same ID
       #profile_id: '' # data.handle OR user-selected, used to retrieve profile resources via "/:handle" routes
@@ -138,18 +138,20 @@ module.exports = class SessionController extends Controller
     @usersRef.child(newUser.id).transaction ((currentUserData) =>
         newUser if currentUserData is null
       ), (error, success, snapshot) =>
+        @loadSessionUser(snapshot.val())
+        ###
         if success
-          console.log 'Created user ' + snapshot.name()
+          #console.log 'Created user ' + snapshot.name()
           @loadSessionUser(snapshot.val())
         else
-          console.log 'User#' + newUser.id + ' already exists'
+          #console.log 'User#' + newUser.id + ' already exists'
           @loadSessionUser(snapshot.val())
-
+        ###
         unless Chaplin.mediator.user.get('profile_id')?
           @redirectTo 'users#join', data
 
   loadSessionUser: (data) =>
-    console.log 'loadSessionUser: (data) =>'
+    #console.log 'loadSessionUser: (data) =>'
     Chaplin.mediator.user = new User data.id
     Chaplin.mediator.user.save data
     @publishLogin()

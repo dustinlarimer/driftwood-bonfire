@@ -18,7 +18,7 @@ module.exports = class Singly extends ServiceProvider
     true
 
   ajax: (type, url, data) ->
-    console.log 'ajax', url, @accessToken, this
+    #console.log 'ajax', url, @accessToken, this
     url = @baseUrl + url
     url += "?access_token=#{@accessToken}" if @accessToken
     $.ajax {url, data, type, dataType: 'json'}

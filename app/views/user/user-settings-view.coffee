@@ -8,7 +8,7 @@ module.exports = class UserSettingsView extends PageView
   initialize: ->
     super
     @delegate 'click', 'button', @sendForm
-  
+      
   sendForm: =>
     data=
       display_name: @$('input#display_name').val()
