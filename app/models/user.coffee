@@ -1,5 +1,5 @@
 config = require 'config'
-FirebaseModel = require 'models/base/firebase-model'
+Model = require 'models/base/model'
 
-module.exports = class User extends FirebaseModel
-  firebase: new Backbone.Firebase(config.firebase + '/users')
+module.exports = class User extends Model
+  idAttribute: 'id'

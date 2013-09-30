@@ -1,10 +1,11 @@
 config = require 'config'
 utils = require 'lib/utils'
 Singly = require 'lib/services/singly'
-
 Controller = require 'controllers/base/controller'
+
+Users = require 'models/users'
 User = require 'models/user'
-Profile = require 'models/profile'
+#Profile = require 'models/profile'
 
 LoginView = require 'views/login-view'
 LoggingInView = require 'views/logging-in-view'
@@ -30,11 +31,7 @@ module.exports = class SessionController extends Controller
   redirect: null
 
   initialize: ->
-    
-    # Firebase References
-    @usersRef = Chaplin.mediator.firebase.child('users')
-    @profilesRef = Chaplin.mediator.firebase.child('profiles')
-    
+        
     # Login flow events
     @subscribeEvent 'serviceProviderSession', @serviceProviderSession
 
@@ -43,7 +40,7 @@ module.exports = class SessionController extends Controller
     #@subscribeEvent 'userData', @userData
 
     # Handler events which trigger an action
-    @subscribeEvent 'setAccessToken', @setAccessToken
+    @subscribeEvent 'setTokens', @setTokens
 
     # Show the login dialog
     @subscribeEvent '!showLogin', @showLoginView
@@ -57,26 +54,26 @@ module.exports = class SessionController extends Controller
 
     # Determine the logged-in state
     @getSession()
-    #console.log @getAccessToken()
 
-  setAccessToken: (access_token) =>
-    localStorage.setItem 'accessToken', access_token
+  setTokens: (params) =>
+    #console.log 'setting tokens...'
+    localStorage.setItem 'accessToken', params.access_token
+    localStorage.setItem 'firebaseToken', params.firebase
 
-  getAccessToken: ->
-    return localStorage.getItem 'accessToken'
+  getTokens: ->
+    tokens=
+      accessToken: localStorage.getItem 'accessToken'
+      firebaseToken: localStorage.getItem 'firebaseToken'
+    return tokens
   
-  removeAccessToken: =>
+  removeTokens: =>
     localStorage.removeItem 'accessToken'
+    localStorage.removeItem 'firebaseToken'
 
   # Load the libraries of all service providers
   loadServiceProviders: ->
     for name, serviceProvider of SessionController.serviceProviders
       serviceProvider.load()
-
-  ### Instantiate the user with the given data
-  createUser: (userData) ->
-    Chaplin.mediator.user = new User userData
-  ###
 
   # Try to get an existing session from one of the login providers
   getSession: ->
@@ -91,19 +88,13 @@ module.exports = class SessionController extends Controller
 
     @redirect = params: redirect_data.params, route: redirect_data.route if redirect_data?
     if @redirect.params? or @redirect.route?
-      return @loginView = new LoggingInView region: 'main' if @getAccessToken()?
+      return @loginView = new LoggingInView region: 'main' if @getTokens()?
     @loginView = new LoginView region: 'main', serviceProviders: SessionController.serviceProviders
 
 
   # Handler for the global !login event
   # Delegate the login to the selected service provider
   triggerLogin: (serviceProviderName) =>
-    #serviceProvider = SessionController.serviceProviders.singly
-    ### Publish an event in case the provider library could not be loaded
-    unless serviceProvider.isLoaded()
-      @publishEvent 'serviceProviderMissing', serviceProviderName
-      return
-    ###
 
     # Publish a global loginAttempt event
     @publishEvent 'loginAttempt', serviceProviderName
@@ -123,49 +114,48 @@ module.exports = class SessionController extends Controller
     session.id = session.userId
     delete session.userId
     
-    @findOrCreateUser session
+    @authenticateFirebase session
 
-
-  findOrCreateUser: (data) =>
-    #console.log 'findOrCreateUser: (data) =>'
-    newUser=         # Grab the attributes you want for this user's record...
-      id: data.id    # Singly will always return the same ID
-      #profile_id: '' # data.handle OR user-selected, used to retrieve profile resources via "/:handle" routes
-
-    if data.email?
-      newUser.email = data.email
-    
-    @usersRef.child(newUser.id).transaction ((currentUserData) =>
-        newUser if currentUserData is null
-      ), (error, success, snapshot) =>
-        @loadSessionUser(snapshot.val())
-        ###
-        if success
-          #console.log 'Created user ' + snapshot.name()
-          @loadSessionUser(snapshot.val())
+  authenticateFirebase: (session) =>
+    firebase_token = @getTokens().firebaseToken
+    Chaplin.mediator.firebase.auth firebase_token, (err, authData) =>
+        unless err
+          @findOrCreateUser session
         else
-          #console.log 'User#' + newUser.id + ' already exists'
-          @loadSessionUser(snapshot.val())
-        ###
-        unless Chaplin.mediator.user.get('profile_id')?
-          @redirectTo 'users#join', data
+          @redirectTo 'auth#login', [err.message]
 
-  loadSessionUser: (data) =>
-    #console.log 'loadSessionUser: (data) =>'
-    Chaplin.mediator.user = new User data.id
-    Chaplin.mediator.user.save data
-    @publishLogin()
+  findOrCreateUser: (session) =>
+    console.log 'SessionController#findOrCreateUser', session
     
+    # Grab the attributes you want for this user's record...
+    newUser = _.pick(session, 'id', 'email')
+    
+    Chaplin.mediator.users = new Users
+    Chaplin.mediator.current_user = new User newUser
+    
+    Chaplin.mediator.users.add Chaplin.mediator.current_user
+    Chaplin.mediator.users.sync 'update', Chaplin.mediator.current_user,
+      success: (model, response) =>
+        Chaplin.mediator.users.fetch 
+          success: (model, response) => 
+            unless Chaplin.mediator.current_user.get('profile_id')?
+              @redirectTo 'users#join', session
+            @publishLogin()
+      error: (model, response) =>
+        console.log 'Error! ', model
+
 
   # Publish an event to notify all application components of the login
   publishLogin: ->
     @loginStatusDetermined = true
 
     # Publish a global login event passing the user
-    @publishEvent 'login', Chaplin.mediator.user
+    @publishEvent 'login', Chaplin.mediator.current_user
     @publishEvent 'loginStatus', true
     
-    @redirectTo @redirect.route.name if @redirect?.route?
+    if @redirect?.route?
+      @redirectTo @redirect.route.name, @redirect.params
+
 
   # Logout
   # ------
@@ -177,7 +167,7 @@ module.exports = class SessionController extends Controller
 
   # Handler for the global logout event
   logout: =>
-    @removeAccessToken()
+    @removeTokens()
     @loginStatusDetermined = true
     @disposeUser()
 
@@ -189,13 +179,6 @@ module.exports = class SessionController extends Controller
 
     @publishEvent 'loginStatus', false
 
-
-  # Handler for the global userData event
-  # -------------------------------------
-  ###
-  userData: (data) ->
-    Chaplin.mediator.user.set data
-  ###
   
   # Disposal
   # --------
@@ -206,8 +189,8 @@ module.exports = class SessionController extends Controller
     @loginView = null
 
   disposeUser: ->
-    return unless Chaplin.mediator.user
+    return unless Chaplin.mediator.current_user
     # Dispose the user model
-    Chaplin.mediator.user.dispose()
+    Chaplin.mediator.current_user.dispose()
     # Nullify property on the mediator
-    Chaplin.mediator.user = null
+    Chaplin.mediator.current_user = null

@@ -1,3 +1,34 @@
+# Single Fiery Chap
+
+Set up a Firebase project, connect it with a Singly account, then drop those credentials into `app/config.coffee`. Fire it up and you have the foundation of a real-time synchronous web app with social auth user profiles.
+
+Enjoy :)
+
+### Firebase Security Rules
+
+Here are a few simple rules I've designed so far:
+
+```json
+{
+  "rules": {
+    ".read": "auth != null",
+    "users": {
+      "$user": {
+        ".read": "$user == auth.account",
+        ".write": "$user == auth.account || newData.child('id').val() == auth.account"
+      }
+    },
+    "profiles": {
+      ".read": true,
+      "$profile": {
+        ".write": "newData.child('user_id').val() == auth.account"
+      }
+    }
+  }
+}
+```
+
+
 # Brunch with Chaplin
 ![](https://a248.e.akamai.net/camo.github.com/b7ebb8bbcec7938940cf8e9c441124c3bddafd3a/687474703a2f2f662e636c2e6c792f6974656d732f34373039326b30423141334a317a3166306b34362f6277632e706e67)
 

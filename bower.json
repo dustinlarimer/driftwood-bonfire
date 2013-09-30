@@ -1,5 +1,5 @@
 {
-  "name": "example-app",
+  "name": "single-fiery-chap",
   "version": "0.1.0",
   "main": "public/javascripts/app.js",
   "dependencies": {
@@ -8,11 +8,8 @@
     "lodash": "~2.0.0",
     "jquery": "~2.0.2",
     "backbone-firebase.js": "https://raw.github.com/firebase/backfire/gh-pages/backbone-firebase.js",
-    "keymaster.js": "https://raw.github.com/madrobby/keymaster/master/keymaster.js",
     "normalize-css": "~2.1.2",
-    "h5bp-helpers": "~0.1.0",
-    "d3": "*",
-    "fastclick": "*"
+    "h5bp-helpers": "~0.1.0"
   },
   "overrides": {
     "backbone": {

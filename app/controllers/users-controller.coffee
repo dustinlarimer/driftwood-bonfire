@@ -2,6 +2,12 @@ config = require 'config'
 Controller = require './base/controller'
 User = require 'models/user'
 Profile = require 'models/profile'
+
+UserView = require 'views/user/user-view'
+# ProfileHeaderView = require 'views/user/user-profile-header-view'
+# ProfileNaviView = require 'views/user/user-profile-navi-view'
+# ProfileContentView = require 'views/user/user-profile-content-view'
+
 UserPageView = require 'views/user/user-page-view'
 UserSettingsView = require 'views/user/user-settings-view'
 UserSetupView = require 'views/user/user-setup-view'
@@ -10,28 +16,44 @@ module.exports = class UsersController extends Controller
 
   beforeAction: (params, route) ->
     super
+    @compose 'profile', UserView
+    
     if route.action in ['settings']
       return @requireLogin(params, route)
 
   initialize: ->
     super
-    @usersRef = Chaplin.mediator.firebase.child('users')
     @profilesRef = Chaplin.mediator.firebase.child('profiles')
     @subscribeEvent 'userRegistered', @join
 
-
+  ###
   show: (params) ->
+    console.log 'UsersController#show', params
     @profilesRef.child(params.handle).once "value", (snapshot) =>
       if snapshot.val()?
         @model = new Profile snapshot.val()
-        @view = new UserPageView { model: @model, region: 'main' }
+        @view = new UserPageView { model: @model, region: 'header' }
       else
         console.log 'User does not exist'
-        # @view = new UserUnavailableView
-        # @view.render()
+        # @view = new UserUnavailableView { autoRender: true }
+
+  show_latest: ->
+    console.log 'UsersController#projects'
+    #@view = new UserLatestView { region: 'main' }
+
+  show_projects: ->
+    console.log 'UsersController#projects'
+    #@view = new UserProjectsView { region: 'main' }
+  
+  show_collaborators: ->
+    console.log 'UsersController#collaborators'
+    #@view = new UserCollaboratorsView { region: 'main' }
+  ###
+
 
   settings: ->
-    _username = Chaplin.mediator.user.get('profile_id')
+    console.log 'UsersController#settings'
+    _username = Chaplin.mediator.current_user.get('profile_id')    
     @profilesRef.child(_username).on "value", (snapshot) =>
       if snapshot.val()?
         @model = new Profile snapshot.val()
@@ -49,6 +71,7 @@ module.exports = class UsersController extends Controller
               alert 'error!' + error.message
   
   join: (params) ->
+    console.log 'UsersController#join', params
     if !params.id?
       @redirectTo 'home#index'
       return false
@@ -57,25 +80,20 @@ module.exports = class UsersController extends Controller
     @model = new Profile {display_name: params.name, handle: params.handle}    
     @view = new UserSetupView {model: @model, region: 'main'}    
     @view.bind 'user:create', (data) =>
-      newProfile=
-        display_name: data.display_name
-        user_id: Chaplin.mediator.user.get('id')
-      @profilesRef.child(data.handle).transaction ((currentProfileData) =>
-          newProfile if currentProfileData is null
-        ), (error, success, snapshot) =>
-          if success
-            console.log '[SUCCESS] Profile created: ' + snapshot.name()
-            #@usersRef.child(Chaplin.mediator.user.get('id')).child('profile_id').set(snapshot.name())
-            Chaplin.mediator.user.save profile_id: data.handle
-            @redirectTo 'home#index'
-            window.location = window.location.pathname
-          else
-            console.log '[ERROR] ' + data.handle + ' already exists'
-            @view.render()
+      newProfile = _.pick(params, 'location', 'thumbnail_url', 'url')
+      newProfile.display_name = data.display_name
+      newProfile.handle = data.handle
+      newProfile.user_id = params.id
       
-      #profile = new Profile newProfile.handle
-      #profile.save newProfile
-      #Chaplin.mediator.user.save profile_id: newProfile.handle
-
+      _new = new Profile newProfile.handle
+      _new.save newProfile,
+        success: (model, response) =>
+          console.log 'success', response
+          Chaplin.mediator.current_user.save {profile_id: response.handle}
+          @redirectTo 'home#index'
+          #window.location = window.location.pathname
+        error: (model, response) ->
+          console.log 'error', response
+          @view.render()
       @view.dispose()
     @view.render()

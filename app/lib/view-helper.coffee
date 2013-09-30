@@ -15,12 +15,12 @@ register = (name, fn) ->
 
 # Choose block by user login status
 register 'ifLoggedIn', (options) ->
-  method = if Chaplin.mediator.user then options.fn else options.inverse
+  method = if Chaplin.mediator.current_user? then options.fn else options.inverse
   method this
 
 ###
 register 'ifIsRepoAdmin', (options) ->
-  user = Chaplin.mediator.user
+  user = Chaplin.mediator.current_user
   return options.inverse(this) unless user
   orgs = user.get('organizations')?.pluck('login') ? []
   repoOwner = @login
@@ -30,7 +30,7 @@ register 'ifIsRepoAdmin', (options) ->
     options.inverse(this)
 
 register 'ifCanEditPost', (options) ->
-  user = Chaplin.mediator.user
+  user = Chaplin.mediator.current_user
   return options.inverse(this) unless user
   orgs = user.get('organizations')?.pluck('login') ? []
   postCreator = @user.login
@@ -75,7 +75,7 @@ register 'withConfig', (options) ->
 
 # Evaluate block with context being current user
 register 'withUser', (options) ->
-  context = Chaplin.mediator.user.getAttributes()
+  context = Chaplin.mediator.current_user.getAttributes()
   Handlebars.helpers.with.call(this, context, options)
 
 ###

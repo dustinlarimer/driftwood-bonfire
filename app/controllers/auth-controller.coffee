@@ -9,20 +9,13 @@ module.exports = class AuthController extends Controller
       .slice(1).split('&')
       .map((string) -> string.split('='))
     console.log 'AuthController#callback', params
-    if params.firebase?
-      mediator.firebase.auth params.firebase, (err, authData) =>
-        unless err
-          @publishEvent 'setAccessToken', params.access_token
-          @redirectTo 'home#index'
-          window.location = window.location.pathname
-        else
-          alert "Could not authenticate: " + err.message
-          @redirectToRoute 'auth#login'
-    else if params.error?
-      @redirectToRoute 'auth#login', [params.error]
+    if params.error?
+      @redirectTo 'auth#login', [params.error]
     else
-      @redirectToRoute 'auth#login'
-
+      @publishEvent 'setTokens', params
+      @redirectTo 'home#index'
+      window.location = window.location.pathname
+    
   login: (params) =>
     @publishEvent '!showLogin', params
 

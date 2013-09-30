@@ -1,6 +1,6 @@
 config = require 'config'
 ServiceProvider = require './service-provider'
-User = require 'models/user'
+#User = require 'models/user'
 
 module.exports = class Singly extends ServiceProvider
   baseUrl: config.singly.singlyURL
@@ -29,7 +29,8 @@ module.exports = class Singly extends ServiceProvider
       '&redirect_uri=' + config.singly.redirectURI + 
       '&service=' + loginContext + 
       '&response_type=token'
-    #singly_url = singly_url + '&access_token=' + @accessToken if @accessToken?
+    #console.log singly_url
+    singly_url = singly_url + '&access_token=' + @accessToken if @accessToken?
     window.location = singly_url
   
   getUserData: ->
@@ -42,9 +43,15 @@ module.exports = class Singly extends ServiceProvider
     if not response or status is 'error'
       @publishEvent 'logout'
     else
+      @publishEvent 'serviceProviderSession', _.extend response,
+        provider: this
+        userId: response.id
+        accessToken: @accessToken
+      
+      ###
       parsed = User::parse.call(null, response)
       @publishEvent 'serviceProviderSession', _.extend parsed,
         provider: this
         userId: response.id
         accessToken: @accessToken
-
+      ###
