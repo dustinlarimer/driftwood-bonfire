@@ -1,4 +1,6 @@
 View = require 'views/base/view'
+template = require './templates/profile'
+
 ProfileHeaderView = require 'views/profile/profile-header-view'
 
 module.exports = class ProfileView extends View
@@ -8,7 +10,7 @@ module.exports = class ProfileView extends View
   regions:
     header: '#header-container'
     content: '#content-container'
-  template: require './templates/profile'
+  template: template
   
   listen:
     'change model': 'render_subviews'

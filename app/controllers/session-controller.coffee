@@ -5,7 +5,6 @@ Controller = require 'controllers/base/controller'
 
 Users = require 'models/users'
 User = require 'models/user'
-#Profile = require 'models/profile'
 
 LoginView = require 'views/login-view'
 LoggingInView = require 'views/logging-in-view'
@@ -88,8 +87,8 @@ module.exports = class SessionController extends Controller
 
     @redirect = params: redirect_data.params, route: redirect_data.route if redirect_data?
     if @redirect.params? or @redirect.route?
-      return @loginView = new LoggingInView region: 'main' if @getTokens()?
-    @loginView = new LoginView region: 'main', serviceProviders: SessionController.serviceProviders
+      return @loginView = new LoggingInView if @getTokens()?
+    @loginView = new LoginView serviceProviders: SessionController.serviceProviders
 
 
   # Handler for the global !login event

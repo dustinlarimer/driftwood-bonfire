@@ -9,8 +9,8 @@ module.exports = class UserSettingsView extends PageView
     super
     @delegate 'submit', 'form', @sendForm
   
-  listen:
-    'model change': 'render'
+  #listen:
+  #  'model change': 'render'
       
   sendForm: =>
     data=

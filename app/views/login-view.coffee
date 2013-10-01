@@ -1,10 +1,12 @@
 config = require 'config'
 utils = require 'lib/utils'
 View = require 'views/base/view'
+template = require './templates/login'
 
 module.exports = class LoginView extends View
-  template: require './templates/login'
+  container: 'body'
   autoRender: true
+  template: template
 
   initialize: (options) ->
     super

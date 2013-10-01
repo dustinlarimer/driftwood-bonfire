@@ -1,6 +1,8 @@
 config = require 'config'
 Controller = require './base/controller'
 User = require 'models/user'
+
+Profiles = require 'models/profiles'
 Profile = require 'models/profile'
 
 SiteView = require 'views/site-view'
@@ -38,7 +40,7 @@ module.exports = class UsersController extends Controller
             url: data.url
           , (error) =>
             unless error?
-              @redirectTo 'users#show', [_username]
+              @redirectTo 'profiles#latest', [_username]
             else
               alert 'error!' + error.message
   
@@ -52,12 +54,31 @@ module.exports = class UsersController extends Controller
     @model = new Profile {display_name: params.name, handle: params.handle}    
     @view = new UserSetupView {model: @model, region: 'main'}    
     @view.bind 'user:create', (data) =>
+      
+      _profiles = new Profiles
+      
       newProfile = _.pick(params, 'location', 'thumbnail_url', 'url')
       newProfile.display_name = data.display_name
       newProfile.handle = data.handle
       newProfile.user_id = params.id
+      _new = new Profile newProfile
       
-      _new = new Profile newProfile.handle
+      _profiles.add _new
+      _profiles.sync 'update', _new,
+        success: (model, response) =>
+          Chaplin.mediator.current_user.save {profile_id: model.handle}
+          @counterRef = Chaplin.mediator.firebase.child('_stats')
+          @counterRef.child('profiles').transaction ((count) ->
+            (count or 0) + 1
+            ), (error, committed, snapshot) =>
+              if error
+                console.log error
+          @redirectTo 'home#index'
+        error: (model, response) =>
+          console.log 'Error! ', model
+          @view.render()
+      
+      ###
       _new.save newProfile,
         success: (model, response) =>
           console.log 'success', response
@@ -67,5 +88,6 @@ module.exports = class UsersController extends Controller
         error: (model, response) ->
           console.log 'error', response
           @view.render()
+      ###
       @view.dispose()
     @view.render()

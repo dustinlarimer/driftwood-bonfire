@@ -1,10 +1,11 @@
 Collection = require 'models/base/collection'
-FirebaseModel = require 'models/base/firebase-model'
+Model = require 'models/base/model'
 
 module.exports = class FirebaseCollection extends Collection
   _(@prototype).extend Backbone.Firebase.Collection
-  model: FirebaseModel
+  model: Model
   
-  initialize: ->
-    console.log 'init FirebaseCollection'
-    super
+  sort_descending: (key) =>
+    @comparator = (model) ->
+      return -model.get(key)
+    @sort()

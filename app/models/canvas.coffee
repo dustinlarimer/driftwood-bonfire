@@ -1,4 +1,4 @@
 Model = require 'models/base/model'
 
-module.exports = class User extends Model
+module.exports = class Canvas extends Model
   idAttribute: 'id'
