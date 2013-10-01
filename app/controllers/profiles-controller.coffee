@@ -2,8 +2,6 @@ Controller = require './base/controller'
 Profile = require 'models/profile'
 
 ProfileView = require 'views/profile/profile-view'
-ProfileHeaderView = require 'views/profile/profile-header-view'
-
 ProfileLatestView = require 'views/profile/profile-latest-view'
 ProfileProjectsView = require 'views/profile/profile-projects-view'
 ProfileCollaboratorsView = require 'views/profile/profile-collaborators-view'

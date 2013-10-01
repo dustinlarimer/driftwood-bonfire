@@ -3,10 +3,7 @@ Controller = require './base/controller'
 User = require 'models/user'
 Profile = require 'models/profile'
 
-UserView = require 'views/user/user-view'
-# ProfileHeaderView = require 'views/user/user-profile-header-view'
-# ProfileNaviView = require 'views/user/user-profile-navi-view'
-# ProfileContentView = require 'views/user/user-profile-content-view'
+SiteView = require 'views/site-view'
 
 UserPageView = require 'views/user/user-page-view'
 UserSettingsView = require 'views/user/user-settings-view'
@@ -16,7 +13,7 @@ module.exports = class UsersController extends Controller
 
   beforeAction: (params, route) ->
     super
-    @compose 'profile', UserView
+    @compose 'site', SiteView
     
     if route.action in ['settings']
       return @requireLogin(params, route)
@@ -25,31 +22,6 @@ module.exports = class UsersController extends Controller
     super
     @profilesRef = Chaplin.mediator.firebase.child('profiles')
     @subscribeEvent 'userRegistered', @join
-
-  ###
-  show: (params) ->
-    console.log 'UsersController#show', params
-    @profilesRef.child(params.handle).once "value", (snapshot) =>
-      if snapshot.val()?
-        @model = new Profile snapshot.val()
-        @view = new UserPageView { model: @model, region: 'header' }
-      else
-        console.log 'User does not exist'
-        # @view = new UserUnavailableView { autoRender: true }
-
-  show_latest: ->
-    console.log 'UsersController#projects'
-    #@view = new UserLatestView { region: 'main' }
-
-  show_projects: ->
-    console.log 'UsersController#projects'
-    #@view = new UserProjectsView { region: 'main' }
-  
-  show_collaborators: ->
-    console.log 'UsersController#collaborators'
-    #@view = new UserCollaboratorsView { region: 'main' }
-  ###
-
 
   settings: ->
     console.log 'UsersController#settings'

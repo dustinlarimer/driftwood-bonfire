@@ -11,6 +11,9 @@ module.exports = class CanvasesController extends Controller
       console.log 'Requires authentication'
       return @requireLogin(params, route)
 
+  create: ->
+    console.log 'CanvasesController#create'
+
   show: (params) ->
     console.log 'CanvasesController#show', params
 

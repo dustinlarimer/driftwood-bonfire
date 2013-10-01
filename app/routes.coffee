@@ -6,6 +6,7 @@ module.exports = (match) ->
   match 'settings', 'users#settings'
   match 'join', 'users#join'
   
+  match 'create', 'canvases#create'
   match ':id', 'canvases#show', constraints: {id: /^\d+$/}
   match ':id/edit', 'canvases#edit', constraints: {id: /^\d+$/}
   

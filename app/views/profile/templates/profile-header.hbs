@@ -1,1 +1,10 @@
 <h1>{{display_name}}</h1>
+
+{{#ifLoggedIn}}
+{{#ifCurrentUser handle}}
+	<ul>
+		<li><a href="{{route "canvases#create"}}">New Canvas</a></li>
+		<li><a href="{{route "users#settings"}}">Edit Profile</a></li>
+	</ul>
+{{/ifCurrentUser}}
+{{/ifLoggedIn}}

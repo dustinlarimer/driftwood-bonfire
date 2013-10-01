@@ -12,7 +12,6 @@ module.exports = class ProfileView extends View
   
   listen:
     'change model': 'render_subviews'
-    #'change model': 'render'
   
   initialize: (data={}) ->
     super

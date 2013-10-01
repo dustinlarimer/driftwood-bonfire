@@ -18,6 +18,12 @@ register 'ifLoggedIn', (options) ->
   method = if Chaplin.mediator.current_user? then options.fn else options.inverse
   method this
 
+# Evaluate block with context being current user
+register 'ifCurrentUser', (handle, options) ->
+  method = if Chaplin.mediator.current_user?.get('profile_id') is handle then options.fn else options.inverse
+  method this
+
+
 ###
 register 'ifIsRepoAdmin', (options) ->
   user = Chaplin.mediator.current_user
@@ -77,6 +83,7 @@ register 'withConfig', (options) ->
 register 'withUser', (options) ->
   context = Chaplin.mediator.current_user.getAttributes()
   Handlebars.helpers.with.call(this, context, options)
+
 
 ###
 Handlebars.registerHelper 'gravatar', (options) ->
@@ -139,3 +146,50 @@ Handlebars.registerHelper 'markdown', (options) ->
 
 register 'route', (routeName, params..., options) ->
   Chaplin.helpers.reverse routeName, params
+
+
+register 'compare', (lvalue, operator, rvalue, options) ->
+  operators = undefined
+  result = undefined
+  throw new Error("Handlerbars Helper 'compare' needs 2 parameters")  if arguments.length < 3
+
+  if options is `undefined`
+    options = rvalue
+    rvalue = operator
+    operator = "==="
+
+  operators =
+    "==": (l, r) ->
+      l is r
+
+    "===": (l, r) ->
+      l is r
+
+    "!=": (l, r) ->
+      l isnt r
+
+    "!==": (l, r) ->
+      l isnt r
+
+    "<": (l, r) ->
+      l < r
+
+    ">": (l, r) ->
+      l > r
+
+    "<=": (l, r) ->
+      l <= r
+
+    ">=": (l, r) ->
+      l >= r
+
+    typeof: (l, r) ->
+      typeof l is r
+
+  throw new Error("Handlerbars Helper 'compare' doesn't know the operator " + operator)  unless operators[operator]
+  result = operators[operator](lvalue, rvalue)
+  if result
+    options.fn this
+  else
+    options.inverse this
+
