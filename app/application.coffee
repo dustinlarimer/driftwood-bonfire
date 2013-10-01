@@ -12,5 +12,4 @@ module.exports = class Application extends Chaplin.Application
     mediator.firebase = new Firebase(config.firebase)
     mediator.users = null
     mediator.current_user = null
-    #mediator.profile = null
     super
