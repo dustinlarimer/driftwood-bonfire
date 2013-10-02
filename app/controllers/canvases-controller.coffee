@@ -35,7 +35,7 @@ module.exports = class CanvasesController extends Controller
               if error
                 console.log error
               else if committed
-                @redirectTo 'canvases#show', snapshot.val()
+                @redirectTo 'canvases#edit', snapshot.val()
 
   show: (params) ->
     console.log 'CanvasesController#show', params

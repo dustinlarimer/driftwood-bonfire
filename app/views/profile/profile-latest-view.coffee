@@ -9,6 +9,7 @@ CanvasesView = require 'views/canvas/canvases-view'
 
 module.exports = class ProfileLatestView extends ProjectView
   autoRender: true
+  containerMethod: 'html'
   regions:
     grid: '.grid'
   template: template
@@ -17,6 +18,7 @@ module.exports = class ProfileLatestView extends ProjectView
   
   render: ->
     super
+    console.log 'rendering subview'
     if @model?.get('canvases')?
       @collection = new FirebaseCollection _.toArray(@model.get('canvases')), model: Canvas
       @collection.firebase = new Backbone.Firebase(config.firebase + '/canvases')

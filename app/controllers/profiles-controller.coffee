@@ -21,39 +21,26 @@ module.exports = class ProfilesController extends Controller
         compose: ->
           @model = new Profile {handle: params.handle}
           @view = new ProfileView {model: @model, route: route.action}          
-          #@model.fetch()
           @profilesRef = Chaplin.mediator.firebase.child('profiles')
-          @profilesRef.child(params.handle).once "value", (snapshot) =>
+          @profilesRef.child(params.handle).on "value", (snapshot) =>
             if snapshot.val()?
               @model?.set snapshot.val()
             else
               console.log 'User does not exist'
-        
         check: -> @model.get('handle') is params.handle
+
 
   latest: (params, route) ->
     console.log 'ProfilesController#latest', params
-    
-    #_profiles = new FirebaseCollection [{handle: params.handle}], model: Profile
-    #_profiles.firebase = new Backbone.Firebase(config.firebase + '/profiles')
-    #@model = _profiles.at(0)
-    
-    @profilesRef = Chaplin.mediator.firebase.child('profiles')
-    @profilesRef.child(params.handle).on "value", (snapshot) =>
-      if snapshot.val()?
-        @model = new Profile snapshot.val()
-        @view = new ProfileLatestView model: @model, region: 'content'
+    current_profile = Chaplin.mediator.execute 'composer:retrieve', 'profile'
+    @view = new ProfileLatestView model: current_profile.model, region: 'content'
 
   projects: (params, route) ->
     console.log 'ProfilesController#projects', params
     current_profile = Chaplin.mediator.execute 'composer:retrieve', 'profile'
-    model = current_profile.model
-    @view = new ProfileProjectsView model: model, region: 'content'
-    #@compose 'projects', ProfileProjectsView, model: @model, region: 'content'
+    @view = new ProfileProjectsView model: current_profile.model, region: 'content'
 
   collaborators: (params, route) ->
     console.log 'ProfilesController#collaborators', params
     current_profile = Chaplin.mediator.execute 'composer:retrieve', 'profile'
-    model = current_profile.model
-    @view = new ProfileCollaboratorsView model: model, region: 'content'
-    #@compose 'collaborators', ProfileCollaboratorsView, model: @model, region: 'content'
+    @view = new ProfileCollaboratorsView model: current_profile.model, region: 'content'
