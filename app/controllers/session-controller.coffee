@@ -117,11 +117,12 @@ module.exports = class SessionController extends Controller
 
   authenticateFirebase: (session) =>
     firebase_token = @getTokens().firebaseToken
-    Chaplin.mediator.firebase.auth firebase_token, (err, authData) =>
-        unless err
-          @findOrCreateUser session
-        else
-          @redirectTo 'auth#login', [err.message]
+    if firebase_token?
+      Chaplin.mediator.firebase.auth firebase_token, (err, authData) =>
+          unless err
+            @findOrCreateUser session
+          else
+            @redirectTo 'auth#login', [err.message]
 
   findOrCreateUser: (session) =>
     console.log 'SessionController#findOrCreateUser', session

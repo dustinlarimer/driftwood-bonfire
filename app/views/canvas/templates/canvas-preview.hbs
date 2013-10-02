@@ -1,3 +1,8 @@
 <h3>
-	<a href="{{route "canvases#show" id}}">Canvas #{{id}}</a>
+	<a href="{{route "canvases#show" id}}">Canvas #{{id}} ({{owner_id}})</a> 
+	{{#ifLoggedIn}}
+	{{#ifIsOwner owner_id}}
+	<a href="{{route "canvases#edit" id}}">Edit</a> 
+	{{/ifIsOwner}}
+	{{/ifLoggedIn}}
 </h3>

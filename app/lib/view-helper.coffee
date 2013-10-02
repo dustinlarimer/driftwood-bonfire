@@ -23,6 +23,9 @@ register 'ifCurrentUser', (handle, options) ->
   method = if Chaplin.mediator.current_user?.get('profile_id') is handle then options.fn else options.inverse
   method this
 
+register 'ifIsOwner', (id, options) ->
+  method = if Chaplin.mediator.current_user?.get('id') is id then options.fn else options.inverse
+  method this
 
 ###
 register 'ifIsRepoAdmin', (options) ->
