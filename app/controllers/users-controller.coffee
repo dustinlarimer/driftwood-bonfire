@@ -6,8 +6,6 @@ Profiles = require 'models/profiles'
 Profile = require 'models/profile'
 
 SiteView = require 'views/site-view'
-
-UserPageView = require 'views/user/user-page-view'
 UserSettingsView = require 'views/user/user-settings-view'
 UserSetupView = require 'views/user/user-setup-view'
 
