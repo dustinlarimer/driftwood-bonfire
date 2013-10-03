@@ -1,6 +1,6 @@
 {
-  "name": "single-fiery-chap",
-  "version": "0.1.0",
+  "name": "ideavis-prototype",
+  "version": "0.0.2",
   "main": "public/javascripts/app.js",
   "dependencies": {
     "chaplin": "~0.11.0",

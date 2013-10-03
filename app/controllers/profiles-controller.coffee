@@ -1,16 +1,10 @@
 config = require 'config'
 Controller = require './base/controller'
-#Collection = require 'models/base/collection'
-
-FirebaseCollection = require 'models/base/firebase-collection'
 Profile = require 'models/profile'
-
 ProfileView = require 'views/profile/profile-view'
 ProfileLatestView = require 'views/profile/profile-latest-view'
 ProfileProjectsView = require 'views/profile/profile-projects-view'
 ProfileCollaboratorsView = require 'views/profile/profile-collaborators-view'
-
-#Canvas = require 'models/canvas'
 
 module.exports = class ProfilesController extends Controller
 
@@ -28,7 +22,6 @@ module.exports = class ProfilesController extends Controller
             else
               console.log 'User does not exist'
         check: -> @model.get('handle') is params.handle
-
 
   latest: (params, route) ->
     console.log 'ProfilesController#latest', params

@@ -9,20 +9,17 @@ Canvases = require 'models/canvases'
 Canvas = require 'models/canvas'
 CanvasesView = require 'views/canvas/canvases-view'
 
-
 module.exports = class ProfileLatestView extends ProjectView
   autoRender: true
   containerMethod: 'html'
   regions:
     grid: '.grid'
   template: template
-  
   listen:
     'sync model': 'render'
   
   render: ->
     super
-    console.log 'rendering subview'
     if @model?.get('canvases')?
       
       # METHOD 3
