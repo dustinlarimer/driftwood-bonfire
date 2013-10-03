@@ -5,5 +5,8 @@ module.exports = class CanvasesView extends CollectionView
   autoRender: true
   itemView: CanvasPreviewView
   tagName: 'ul'
-  #listen:
+
+  # Method 2
+  # autoRender: false
+  # listen:
   #  'change collection': 'render'

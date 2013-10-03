@@ -31,10 +31,8 @@ module.exports = class ProfileLatestView extends ProjectView
       @collection.sort_descending('id')
       @subview 'canvas-collection', new CanvasesView collection: @collection, region: 'grid'
       
-      _.each(_.toArray(@model.get('canvases')), (d,i) =>
-        console.log d
-        @canvasesRef.child(d.id).once 'value', (snapshot) =>
-          console.log snapshot.val()
+      _.each(_.toArray(@model.get('canvases')), (canvas) =>
+        @canvasesRef.child(canvas.id).once 'value', (snapshot) =>
           @collection.add new Canvas snapshot.val()
       )
       
