@@ -1,15 +1,16 @@
 mediator = require 'mediator'
-template = require 'views/editor/templates/header'
+template = require './templates/header'
 View = require 'views/base/view'
 
 module.exports = class HeaderView extends View
   autoRender: true
+  className: 'navbar navbar-inverse navbar-fixed-top'
   #el: '#header'
   template: template
 
   initialize: (data={}) ->
     super
-    console.log '[-- Header view activated --]'
+    console.log '[-- Header view activated --]', @model
     @delegate 'change', '#canvas-attr-title', @update_canvas
     @delegate 'submit', 'form', @update_canvas
 

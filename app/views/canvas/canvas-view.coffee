@@ -1,9 +1,12 @@
+mediator = require 'mediator'
 template = require './templates/canvas'
 View = require 'views/base/view'
 
 module.exports = class CanvasView extends View
   autoRender: true
   container: 'body'
+  containerMethod: 'html'
+  className: 'canvas-container'
   id: 'canvas-container'
   regions:
     header: '.header-container'
@@ -14,13 +17,9 @@ module.exports = class CanvasView extends View
 
   initialize: ->
     super
-    #console.log 'Initializing CanvasView', @
-  
+    console.log 'Initializing ', @
+
 ###
-  
-mediator = require 'mediator'
-View = require 'views/base/view'
-template = require 'views/templates/canvas'
 
 NodeView = require 'views/node-view'
 LinkView = require 'views/link-view'

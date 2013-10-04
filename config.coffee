@@ -8,9 +8,9 @@ exports.config =
         'javascripts/vendor.js'     : /^(?!app)/
 
     stylesheets:
-      joinTo: 
-        'stylesheets/editor.css'    : /^app(\/|\\)views(\/|\\)editor/
-        'stylesheets/app.css'       : /^(?!app(\/|\\)views(\/|\\)editor)/
+      joinTo: 'stylesheets/app.css'
+        #'stylesheets/editor.css'    : /^app(\/|\\)views(\/|\\)editor/
+        #'stylesheets/app.css'       : /^(?!app(\/|\\)views(\/|\\)editor)/
 
     templates:
       joinTo:

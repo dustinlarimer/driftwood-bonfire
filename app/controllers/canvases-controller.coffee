@@ -3,6 +3,7 @@ Controller = require './base/controller'
 
 Canvas = require 'models/canvas'
 CanvasView = require 'views/canvas/canvas-view'
+EditorView = null
 
 module.exports = class CanvasesController extends Controller
   
@@ -44,20 +45,20 @@ module.exports = class CanvasesController extends Controller
     console.log 'CanvasesController#show', params
     @model = new Canvas
     @canvasesRef = Chaplin.mediator.firebase.child('canvases')
-    @canvasesRef.child(params.id).on 'value', (snapshot) =>
+    @canvasesRef.child(params.id).once 'value', (snapshot) =>
       @model.set snapshot.val()
-    @view = new CanvasView {@model}
-    #@compose 'canvas', CanvasView, {model: @model}
+      @view = new CanvasView {@model}
+      #@compose 'canvas', CanvasView, {model: @model}
 
   edit: (params) ->
     console.log 'CanvasesController#edit', params
-    utils.loadLib '/javascripts/editor.js', ->
+    utils.loadLib '/javascripts/editor.js', =>
       EditorView = require 'views/editor/editor-view'
       console.log 'EditorController is online'
       @model = new Canvas
       @canvasesRef = Chaplin.mediator.firebase.child('canvases')
-      @canvasesRef.child(params.id).on 'value', (snapshot) =>
+      @canvasesRef.child(params.id).once 'value', (snapshot) =>
         @model.set snapshot.val()
-      @view = new EditorView {@model}
-      #@compose 'editor', EditorView, {model: @model}
+        @view = new EditorView {@model}
+        #@compose 'editor', EditorView, {model: @model}
       
