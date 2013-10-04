@@ -6,16 +6,18 @@ module.exports = class HeaderView extends View
   autoRender: true
   className: 'navbar navbar-inverse navbar-fixed-top'
   template: template
+  listen:
+    'sync model': 'render'
 
   initialize: (data={}) ->
     super
     console.log '[-- Header view activated --]', @model
     @delegate 'change', '#canvas-attr-title', @update_canvas
-    @delegate 'submit', 'form', @update_canvas
+    @delegate 'submit', 'form', -> return false
 
-  update_canvas: ->
-    _title = @$('#canvas-attr-title').val() or 'Untitled'
-    @$('#canvas-attr-title').val(_title) if _title is 'Untitled'
-    @$('#canvas-attr-title').blur()
-    @trigger 'canvas:update', {title: _title}
+  update_canvas: (e) ->
+    @title = @$('.data-canvas-title').val() or 'Untitled'
+    if @title isnt @model.get('title')
+      @trigger 'canvas:update', {title: @title}
+    @$('.data-canvas-title').blur()
     return false

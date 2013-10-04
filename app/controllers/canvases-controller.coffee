@@ -75,5 +75,5 @@ module.exports = class CanvasesController extends Controller
       else
         @model.once 'sync', => @view.render()
 
-      @model.on 'change:title', => @adjustTitle @model?.get('title') or 'Untitled'
+      @model.on 'change:title', => @adjustTitle @model?.get('title')
       @model.on 'all', (d,a) => console.log d, a
