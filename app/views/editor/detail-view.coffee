@@ -14,7 +14,7 @@ DetailAxisView = require 'views/editor/detail/detail-axis-view'
 
 module.exports = class DetailView extends View
   autoRender: true
-  el: '#detail-wrapper'
+  #el: '#detail-wrapper'
   template: template
   regions: 
     '#detail-palette' : 'palette'

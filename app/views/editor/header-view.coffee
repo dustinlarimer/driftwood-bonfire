@@ -4,7 +4,7 @@ View = require 'views/base/view'
 
 module.exports = class HeaderView extends View
   autoRender: true
-  el: '#header'
+  #el: '#header'
   template: template
 
   initialize: (data={}) ->

@@ -8,7 +8,7 @@ module.exports = class CanvasesController extends Controller
   
   beforeAction: (params, route) ->
     super
-    @compose 'canvas', CanvasView
+    #@compose 'canvas', CanvasView
     if route.action in ['create', 'edit']
       return @requireLogin(params, route)
 
@@ -42,8 +42,12 @@ module.exports = class CanvasesController extends Controller
 
   show: (params) ->
     console.log 'CanvasesController#show', params
-    #@model = canvas from 'canvases/:id'
-    #@view = new CanvasView {@model}
+    @model = new Canvas
+    @canvasesRef = Chaplin.mediator.firebase.child('canvases')
+    @canvasesRef.child(params.id).on 'value', (snapshot) =>
+      @model.set snapshot.val()
+    @view = new CanvasView {@model}
+    #@compose 'canvas', CanvasView, {model: @model}
 
   edit: (params) ->
     console.log 'CanvasesController#edit', params
@@ -55,3 +59,5 @@ module.exports = class CanvasesController extends Controller
       @canvasesRef.child(params.id).on 'value', (snapshot) =>
         @model.set snapshot.val()
       @view = new EditorView {@model}
+      #@compose 'editor', EditorView, {model: @model}
+      

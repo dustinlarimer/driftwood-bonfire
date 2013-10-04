@@ -1,8 +1,8 @@
 mediator = require 'mediator'
-template = require 'views/editor/detail/templates/detail-palette'
+template = require './templates/detail-palette'
 View = require 'views/base/view'
 
-DetailPaletteCanvasView = require 'views/editor/detail/detail-palette-canvas-view'
+DetailPaletteCanvasView = require './detail-palette-canvas-view'
 
 module.exports = class DetailPaletteView extends View
   autoRender: true
