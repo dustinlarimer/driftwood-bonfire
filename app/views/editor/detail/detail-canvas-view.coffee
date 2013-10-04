@@ -1,5 +1,5 @@
 mediator = require 'mediator'
-template = require 'editor/views/templates/detail-canvas'
+template = require 'views/editor/detail/templates/detail-canvas'
 View = require 'views/base/view'
 
 module.exports = class DetailCanvasView extends View

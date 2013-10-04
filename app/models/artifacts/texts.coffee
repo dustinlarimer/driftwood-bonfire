@@ -1,7 +1,5 @@
-Chaplin = require 'chaplin'
 Collection = require 'models/base/collection'
-
-Text = require 'models/text'
+Text = require './text'
 
 module.exports = class Texts extends Collection
   model: Text

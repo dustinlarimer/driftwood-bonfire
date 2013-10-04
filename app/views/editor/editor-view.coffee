@@ -1,17 +1,17 @@
 mediator = require 'mediator'
-template = require 'editor/views/templates/editor'
+template = require './templates/editor'
 
-CanvasView = require 'views/canvas-view'
+CanvasView = require 'views/canvas/canvas-view'
 
-ToolPointerView    = require 'editor/views/tool-pointer-view'
-ToolNodeView       = require 'editor/views/tool-node-view'
-ToolLinkView       = require 'editor/views/tool-link-view'
-ToolAxisView       = require 'editor/views/tool-axis-view'
-ToolTextView       = require 'editor/views/tool-text-view'
-ToolEyedropperView = require 'editor/views/tool-eyedropper-view'
+ToolPointerView    = require './controls/tool-pointer-view'
+ToolNodeView       = require './controls/tool-node-view'
+ToolLinkView       = require './controls/tool-link-view'
+ToolAxisView       = require './controls/tool-axis-view'
+ToolTextView       = require './controls/tool-text-view'
+ToolEyedropperView = require './controls/tool-eyedropper-view'
 
-HeaderView = require 'editor/views/header-view'
-DetailView = require 'editor/views/detail-view'
+HeaderView = require './header-view'
+DetailView = require './detail-view'
 
 module.exports = class EditorView extends CanvasView
   el: '#canvas'

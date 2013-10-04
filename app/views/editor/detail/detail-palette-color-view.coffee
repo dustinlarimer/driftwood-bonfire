@@ -1,6 +1,6 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
-template = require 'editor/views/templates/detail-palette-color'
+template = require 'views/editor/detail/templates/detail-palette-color'
 
 module.exports = class DetailPaletteColorView extends View
   autoRender: true

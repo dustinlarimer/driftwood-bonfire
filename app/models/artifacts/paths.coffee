@@ -1,7 +1,5 @@
-Chaplin = require 'chaplin'
 Collection = require 'models/base/collection'
-
-Path = require 'models/path'
+Path = require './path'
 
 module.exports = class Paths extends Collection
   model: Path

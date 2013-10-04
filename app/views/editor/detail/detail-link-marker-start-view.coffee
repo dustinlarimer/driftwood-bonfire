@@ -1,5 +1,5 @@
 mediator = require 'mediator'
-template = require 'editor/views/templates/detail-link-marker-start'
+template = require 'views/editor/detail/templates/detail-link-marker-start'
 View = require 'views/base/view'
 
 module.exports = class DetailLinkMarkerStartView extends View

@@ -2,7 +2,7 @@ mediator = require 'mediator'
 #template = require 'editor/views/templates/detail-palette-canvas'
 CollectionView = require 'views/base/collection-view'
 
-DetailPaletteColorView = require 'editor/views/detail-palette-color-view'
+DetailPaletteColorView = require 'views/editor/detail/detail-palette-color-view'
 
 module.exports = class DetailPaletteCanvasView extends CollectionView
   autoRender: true

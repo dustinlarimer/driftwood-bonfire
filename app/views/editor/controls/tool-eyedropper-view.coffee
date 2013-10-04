@@ -1,9 +1,9 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
 
-Node = require 'models/node'
-Path = require 'models/path'
-Text = require 'models/text'
+Node = require 'models/artifacts/node'
+Path = require 'models/artifacts/path'
+Text = require 'models/artifacts/text'
 
 module.exports = class ToolEyedropperView extends View
 

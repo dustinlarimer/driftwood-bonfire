@@ -1,7 +1,7 @@
 mediator = require 'mediator'
 CollectionView = require 'views/base/collection-view'
 
-DetailNodeTextView = require 'editor/views/detail-node-text-view'
+DetailNodeTextView = require 'views/editor/detail/detail-node-text-view'
 
 module.exports = class DetailNodeTextsView extends CollectionView
   autoRender: true

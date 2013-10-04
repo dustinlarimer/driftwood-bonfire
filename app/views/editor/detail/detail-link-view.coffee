@@ -1,9 +1,9 @@
 mediator = require 'mediator'
-template = require 'editor/views/templates/detail-link'
+template = require 'views/editor/detail/templates/detail-link'
 View = require 'views/base/view'
 
-DetailLinkMarkerStartView = require 'editor/views/detail-link-marker-start-view'
-DetailLinkMarkerEndView = require 'editor/views/detail-link-marker-end-view'
+DetailLinkMarkerStartView = require 'views/editor/detail/detail-link-marker-start-view'
+DetailLinkMarkerEndView = require 'views/editor/detail/detail-link-marker-end-view'
 
 module.exports = class DetailLinkView extends View
   autoRender: true

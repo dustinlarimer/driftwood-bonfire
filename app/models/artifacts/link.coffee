@@ -1,6 +1,6 @@
 Model = require 'models/base/model'
 
-Marker = require 'models/marker'
+Marker = require './marker'
 
 module.exports = class Link extends Model
   defaults:

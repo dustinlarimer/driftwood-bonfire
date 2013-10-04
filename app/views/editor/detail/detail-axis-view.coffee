@@ -1,5 +1,5 @@
 mediator = require 'mediator'
-template = require 'editor/views/templates/detail-axis'
+template = require 'views/editor/detail/templates/detail-axis'
 View = require 'views/base/view'
 
 module.exports = class DetailAxisView extends View

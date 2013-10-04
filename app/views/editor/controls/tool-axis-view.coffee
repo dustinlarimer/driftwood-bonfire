@@ -1,7 +1,6 @@
 mediator = require 'mediator'
+utils = require 'lib/utils'
 View = require 'views/base/view'
-
-zoom_helpers = require '/editor/lib/zoom-helpers'
 
 module.exports = class ToolAxisView extends View
   
@@ -53,7 +52,7 @@ module.exports = class ToolAxisView extends View
   start_line: =>
     e = d3.event.sourceEvent
     e.stopPropagation()
-    coordinates = zoom_helpers.get_coordinates(e)
+    coordinates = utils.get_coordinates(e)
     @reset()
 
     @start_point=
@@ -82,7 +81,7 @@ module.exports = class ToolAxisView extends View
     e = d3.event.sourceEvent
     e.stopPropagation()
     if @start_point?
-      coordinates = zoom_helpers.get_coordinates(e)
+      coordinates = utils.get_coordinates(e)
       @drag_point=
         x: coordinates.x
         y: coordinates.y

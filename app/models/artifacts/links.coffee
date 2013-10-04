@@ -1,7 +1,6 @@
-Chaplin = require 'chaplin'
 mediator = require 'mediator'
 Collection = require 'models/base/collection'
-Link = require 'models/link'
+Link = require './link'
 
 module.exports = class Links extends Collection
   _.extend @prototype, Chaplin.SyncMachine

@@ -1,3 +1,4 @@
+utils = require 'lib/utils'
 Controller = require './base/controller'
 CanvasView = require 'views/canvas/canvas-view'
 
@@ -44,6 +45,8 @@ module.exports = class CanvasesController extends Controller
 
   edit: (params) ->
     console.log 'CanvasesController#edit', params
-    #loadLib '/editor.js', ->
-    #  @model = canvas from 'canvases/:id'
-    #  @view = new EditorView {@model}
+    utils.loadLib '/javascripts/editor.js', ->
+      EditorView = require 'views/editor/editor-view'
+      console.log 'EditorController is online'
+      #@model = canvas from 'canvases/:id'
+      #@view = new EditorView {@model}

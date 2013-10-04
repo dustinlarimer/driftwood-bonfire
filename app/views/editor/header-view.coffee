@@ -1,5 +1,5 @@
 mediator = require 'mediator'
-template = require 'editor/views/templates/header'
+template = require 'views/editor/templates/header'
 View = require 'views/base/view'
 
 module.exports = class HeaderView extends View

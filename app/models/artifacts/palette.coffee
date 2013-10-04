@@ -1,5 +1,5 @@
 Collection = require 'models/base/collection'
-Color = require 'models/color'
+Color = require './color'
 
 module.exports = class Palette extends Collection
   model: Color

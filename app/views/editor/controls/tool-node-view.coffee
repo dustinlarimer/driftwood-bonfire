@@ -1,10 +1,10 @@
 mediator = require 'mediator'
+utils = require 'lib/utils'
+#zoom_helpers = require '/editor/lib/zoom-helpers'
 View = require 'views/base/view'
 
-Path = require 'models/path'
-Text = require 'models/text'
-
-zoom_helpers = require '/editor/lib/zoom-helpers'
+Path = require 'models/artifacts/path'
+Text = require 'models/artifacts/text'
 
 module.exports = class ToolNodeView extends View
   
@@ -58,7 +58,7 @@ module.exports = class ToolNodeView extends View
   start_node: =>
     e = d3.event.sourceEvent
     e.stopPropagation()
-    coordinates = zoom_helpers.get_coordinates(e)
+    coordinates = utils.get_coordinates(e)
     @start_point=
       x: Math.round(coordinates.x)
       y: Math.round(coordinates.y)
@@ -87,7 +87,7 @@ module.exports = class ToolNodeView extends View
   scale_node: =>
     e = d3.event.sourceEvent
     e.stopPropagation()
-    coordinates = zoom_helpers.get_coordinates(e)
+    coordinates = utils.get_coordinates(e)
 
     @end_point=
       x: Math.round(coordinates.x)
@@ -106,7 +106,7 @@ module.exports = class ToolNodeView extends View
   create_node: =>
     e = d3.event.sourceEvent
     e.stopPropagation()
-    coordinates = zoom_helpers.get_coordinates(e)
+    coordinates = utils.get_coordinates(e)
 
     if @end_point?
       delta_x = Math.pow(@end_point.x - @start_point.x, 2)

@@ -1,7 +1,8 @@
 mediator = require 'mediator'
+utils = require 'lib/utils'
 View = require 'views/base/view'
-Node = require 'models/node'
-zoom_helpers = require '/editor/lib/zoom-helpers'
+Node = require 'models/artifacts/node'
+#zoom_helpers = require '/editor/lib/zoom-helpers'
 
 module.exports = class ToolPointerView extends View
 
@@ -196,7 +197,7 @@ module.exports = class ToolPointerView extends View
   node_drag_start: (d, i) =>
     e = d3.event.sourceEvent
     e.stopPropagation()
-    coordinates = zoom_helpers.get_coordinates(e)
+    coordinates = utils.get_coordinates(e)
 
     mediator.publish 'refresh_canvas' #'pause_canvas'    
     @active_node_target = d3.select(d3.event.sourceEvent.target.parentElement).data()[0]
@@ -304,7 +305,7 @@ module.exports = class ToolPointerView extends View
   axis_drag_start: (d, i) =>
     e = d3.event.sourceEvent
     e.stopPropagation()
-    coordinates = zoom_helpers.get_coordinates(e)
+    coordinates = utils.get_coordinates(e)
     
     mediator.publish 'refresh_canvas'
     mediator.publish 'clear_active'

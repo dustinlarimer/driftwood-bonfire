@@ -1,10 +1,10 @@
 Model = require 'models/base/model'
 
-Paths = require 'models/paths'
-Path = require 'models/path'
+Paths = require './paths'
+Path = require './path'
 
-Texts = require 'models/texts'
-Text = require 'models/text'
+Texts = require './texts'
+Text = require './text'
 
 module.exports = class Node extends Model
   defaults:

@@ -1,7 +1,6 @@
 mediator = require 'mediator'
+utils = require 'lib/utils'
 View = require 'views/base/view'
-
-zoom_helpers = require '/editor/lib/zoom-helpers'
 
 module.exports = class ToolLinkView extends View
   
@@ -75,7 +74,7 @@ module.exports = class ToolLinkView extends View
   stretch_link: (d,i) =>
     e = d3.event.sourceEvent
     e.stopPropagation()
-    coordinates = zoom_helpers.get_coordinates(e)
+    coordinates = utils.get_coordinates(e)
     @placeholder.select('#ghost_line')
       .attr('x2', coordinates.x)
       .attr('y2', coordinates.y)

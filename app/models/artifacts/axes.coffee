@@ -1,7 +1,6 @@
-Chaplin = require 'chaplin'
 mediator = require 'mediator'
 Collection = require 'models/base/collection'
-Axis = require 'models/axis'
+Axis = require './axis'
 
 module.exports = class Axes extends Collection
   _.extend @prototype, Chaplin.SyncMachine

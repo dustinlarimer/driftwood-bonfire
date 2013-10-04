@@ -1,7 +1,6 @@
-Chaplin = require 'chaplin'
 mediator = require 'mediator'
 Collection = require 'models/base/collection'
-Node = require 'models/node'
+Node = require './node'
 
 module.exports = class Nodes extends Collection
   _.extend @prototype, Chaplin.SyncMachine

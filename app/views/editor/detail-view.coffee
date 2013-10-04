@@ -1,16 +1,16 @@
 mediator = require 'mediator'
-template = require 'editor/views/templates/detail'
+template = require 'views/editor/templates/detail'
 View = require 'views/base/view'
 
-Node = require 'models/node'
-Link = require 'models/link'
-Axis = require 'models/axis'
+Node = require 'models/artifacts/node'
+Link = require 'models/artifacts/link'
+Axis = require 'models/artifacts/axis'
 
-DetailPaletteView = require 'editor/views/detail-palette-view'
-DetailCanvasView = require 'editor/views/detail-canvas-view'
-DetailNodeView = require 'editor/views/detail-node-view'
-DetailLinkView = require 'editor/views/detail-link-view'
-DetailAxisView = require 'editor/views/detail-axis-view'
+DetailPaletteView = require 'views/editor/detail/detail-palette-view'
+DetailCanvasView = require 'views/editor/detail/detail-canvas-view'
+DetailNodeView = require 'views/editor/detail/detail-node-view'
+DetailLinkView = require 'views/editor/detail/detail-link-view'
+DetailAxisView = require 'views/editor/detail/detail-axis-view'
 
 module.exports = class DetailView extends View
   autoRender: true

@@ -1,9 +1,9 @@
 mediator = require 'mediator'
-template = require 'editor/views/templates/detail-node'
+template = require 'views/editor/detail/templates/detail-node'
 View = require 'views/base/view'
 
-DetailNodePathsView = require 'editor/views/detail-node-paths-view'
-DetailNodeTextsView = require 'editor/views/detail-node-texts-view'
+DetailNodePathsView = require 'views/editor/detail/detail-node-paths-view'
+DetailNodeTextsView = require 'views/editor/detail/detail-node-texts-view'
 
 module.exports = class DetailNodeView extends View
   autoRender: true
