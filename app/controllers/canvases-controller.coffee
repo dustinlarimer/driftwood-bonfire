@@ -1,7 +1,10 @@
+config = require 'config'
 utils = require 'lib/utils'
 Controller = require './base/controller'
 
+FirebaseModel = require 'models/base/firebase-model'
 Canvas = require 'models/canvas'
+
 CanvasView = require 'views/canvas/canvas-view'
 EditorView = null
 
@@ -9,7 +12,6 @@ module.exports = class CanvasesController extends Controller
   
   beforeAction: (params, route) ->
     super
-    #@compose 'canvas', CanvasView
     if route.action in ['create', 'edit']
       return @requireLogin(params, route)
 
@@ -43,22 +45,35 @@ module.exports = class CanvasesController extends Controller
 
   show: (params) ->
     console.log 'CanvasesController#show', params
-    @model = new Canvas
-    @canvasesRef = Chaplin.mediator.firebase.child('canvases')
-    @canvasesRef.child(params.id).once 'value', (snapshot) =>
-      @model.set snapshot.val()
-      @view = new CanvasView {@model}
+    @model = new FirebaseModel null, firebase: config.firebase + '/canvases/' + params.id
+    @view = new CanvasView {model: @model} #, region: 'main'
+
+    #@model = new Canvas
+    #@canvasesRef = Chaplin.mediator.firebase.child('canvases')
+    #@canvasesRef.child(params.id).once 'value', (snapshot) =>
+    #  @model.set snapshot.val()
+      #@adjustTitle @model?.get('title') or 'Untitled'
+      #@compose 'canvas', =>
+      #@view = new CanvasView {model: @model} #, region: 'main'
       #@compose 'canvas', CanvasView, {model: @model}
 
   edit: (params) ->
     console.log 'CanvasesController#edit', params
-    utils.loadLib '/javascripts/editor.js', =>
-      EditorView = require 'views/editor/editor-view'
+    
+    unless EditorView?
+      console.log '[Loading] /javascripts/editor.js'
+      utils.loadLib '/javascripts/editor.js', =>
+        EditorView = require 'views/editor/editor-view'
+        @edit(params)
+    else
       console.log 'EditorController is online'
-      @model = new Canvas
-      @canvasesRef = Chaplin.mediator.firebase.child('canvases')
-      @canvasesRef.child(params.id).once 'value', (snapshot) =>
-        @model.set snapshot.val()
-        @view = new EditorView {@model}
-        #@compose 'editor', EditorView, {model: @model}
+      @model = new FirebaseModel null, firebase: config.firebase + '/canvases/' + params.id
+      @view = new EditorView {model: @model}
       
+      if @model.get('id')?
+        @view.render()
+      else
+        @model.once 'sync', => @view.render()
+
+      @model.on 'change:title', => @adjustTitle @model?.get('title') or 'Untitled'
+      @model.on 'all', (d,a) => console.log d, a

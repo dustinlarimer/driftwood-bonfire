@@ -3,7 +3,7 @@ template = require './templates/canvas'
 View = require 'views/base/view'
 
 module.exports = class CanvasView extends View
-  autoRender: true
+  autoRender: false
   container: 'body'
   containerMethod: 'html'
   className: 'canvas-container'

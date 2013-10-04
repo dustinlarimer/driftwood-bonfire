@@ -14,7 +14,7 @@ module.exports = class ProfilesController extends Controller
       @compose 'profile',
         compose: ->
           @model = new Profile {handle: params.handle}
-          @view = new ProfileView {model: @model, route: route.action}          
+          @view = new ProfileView {model: @model, route: route.action}
           @profilesRef = Chaplin.mediator.firebase.child('profiles')
           @profilesRef.child(params.handle).on "value", (snapshot) =>
             if snapshot.val()?

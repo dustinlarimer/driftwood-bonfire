@@ -47,6 +47,9 @@ module.exports = class EditorView extends CanvasView
     console.log 'Rendering EditorView [...]'
     
     @subview 'header_view', new HeaderView model: @model, region: 'header'
+    @subview('header_view').bind 'canvas:update', (data) =>
+      @model.set data
+    
     #@subview 'detail_view', new DetailView model: null, region: 'detail'
     #@subview 'tool_view', @toolbar_view = null
     

@@ -6,6 +6,7 @@ module.exports = class Application extends Chaplin.Application
 
   initLayout: (options = {}) =>
     options.title ?= @title
+    options.titleTemplate = _.template("<%= subtitle %> | <%= title %>")
     @layout = new Layout options
 
   initMediator: ->
