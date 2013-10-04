@@ -14,7 +14,7 @@ HeaderView = require './header-view'
 DetailView = require './detail-view'
 
 module.exports = class EditorView extends CanvasView
-  el: '#canvas'
+  #el: '#canvas'
   template: template
 
   initialize: ->
