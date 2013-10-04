@@ -39,6 +39,11 @@ module.exports = class CanvasesController extends Controller
 
   show: (params) ->
     console.log 'CanvasesController#show', params
+    #@model = canvas from 'canvases/:id'
+    #@view = new CanvasView {@model}
 
   edit: (params) ->
     console.log 'CanvasesController#edit', params
+    #loadLib '/editor.js', ->
+    #  @model = canvas from 'canvases/:id'
+    #  @view = new EditorView {@model}

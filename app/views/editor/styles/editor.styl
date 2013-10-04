@@ -1,0 +1,704 @@
+@import 'nib'
+
+/* ==========================================================================
+   Editor styles
+   ========================================================================== */
+
+body
+  overflow hidden
+  padding 0
+
+#canvas
+  background #e5e5e5
+
+.navbar
+  position fixed
+  
+  .navbar-inner
+    background rgba(0,0,0,.75)
+    border medium none
+    box-shadow none
+  
+  .container
+    padding 5px 0
+    width auto
+  
+  .brand
+    color #fff
+    font-size 18px
+    margin 0
+    padding 10px 10px !important
+    text-align center
+    text-shadow none
+    width 50px
+
+  .nav
+    padding-right 5px
+
+  .nav > li > a
+    padding 10px 15px
+    &:hover, &:focus, &:active
+      border medium none
+      padding 10px 15px
+
+  form.navbar-form
+    input
+      background rgba(0,0,0,.2)
+      border-radius 2px
+      border medium none
+      box-shadow inset 1px 1px 1px rgba(0,0,0,.25)
+      color #fff !important
+      font-size 16px
+      font-weight 700
+      height auto
+      margin-left 12px
+      margin-right 12px
+      padding 6px 10px 4px
+      text-shadow 1px 1px 1px rgba(0,0,0,.25)
+    input::-webkit-input-placeholder
+      font-size 12px
+      font-weight lighter
+      line-height 22px
+    input::-moz-placeholder
+      font-size 12px
+      font-weight lighter
+      line-height 22px
+
+#stage
+  background #fff
+  margin 0
+  padding 50px 0 0 50px
+
+  //#editable_node_label
+  //  position absolute
+
+#controls
+  position absolute
+  top 0
+  z-index 1
+
+  #toolbar
+    background rgba(215,215,215,.96)
+    border-right 1px solid #ccc
+    height 100%
+    padding 62px 10px 0
+    position fixed
+    z-index 1
+    
+    hr
+      border-top 1px solid rgba(0,0,0,.2)
+      border-bottom 1px solid #fff
+      margin 0 0 12px
+    
+    .btn-group+.btn-group
+      margin-left 0
+    
+    .btn-group > .btn
+      background #fff
+      border 1px solid rgba(0,0,0,.15)
+      border-radius 4px
+      box-shadow none
+      height 28px
+      margin 0 0 12px
+      padding 4px
+      text-align center
+      transition background .25s
+      width 28px
+      &:hover, &:focus
+        background rgb(240,245,250)
+      &.active
+        background rgb(180,230,250)
+
+    .btn-group-vertical-bottom
+      bottom 0px
+      display block
+      position absolute
+
+    #tool-pointer,
+    #tool-node,
+    #tool-link,
+    #tool-axis,
+    #tool-text,
+    #tool-eyedropper
+      background-position 50% 50%
+      background-repeat no-repeat
+      background-size 100%
+
+    #tool-pointer
+      background-image url('/images/toolbar-pointer.png')
+
+    #tool-node
+      background-image url('/images/toolbar-node.png')
+
+    #tool-link
+      background-image url('/images/toolbar-link.png')
+
+    #tool-axis
+      background-image url('/images/toolbar-axis.png')
+
+    #tool-text
+      background-image url('/images/toolbar-text.png')
+
+    #tool-eyedropper
+      background-image url('/images/toolbar-eyedropper.png')
+
+  #detail
+    height 100%
+    overflow-x hidden
+    overflow-y auto
+    -webkit-overflow-scrolling: touch
+    padding 0 11px 0 0
+    position fixed
+    right 0px
+    width 311px
+    z-index 1
+
+    #detail-wrapper
+      background rgba(215,215,215,.96)
+      border-right 1px solid #ccc
+      border-left 1px solid #ccc
+      padding 50px 0 0
+
+    #detail-palette
+      padding 12px 10px 5px
+      position relative
+      hr
+        margin 0 0 5px
+      ul.palette-grid
+        clearfix()
+        list-style none
+        margin 0 0 5px
+        li
+          float left
+          height 20px
+          width 20px
+          canvas.palette-preview
+            box-shadow 0 1px 1px rgba(0,0,0,.1)
+            cursor pointer
+            height 20px
+            width 20px
+          a
+            border 1px solid #999
+            border-radius 2px
+            float left
+            height 17px
+            padding 0px
+            margin 2px 0 0 2px
+            text-align center
+            width 17px
+            i
+              margin 0
+              opacity .5
+              vertical-align top
+
+      .demo-palette-overlay
+        display none
+        &.active
+          display block !important
+
+      .palette-overlay,
+      .demo-palette-overlay
+        height 100%
+        left 0
+        position absolute
+        top 0
+        width 100%
+        .palette-overlay-panel
+          height 100%
+          opacity .75
+          left 0
+          position absolute
+          right 0
+          top 0
+        input
+          font-size 32px
+          height 50%
+          left 25%
+          position absolute
+          top 25%
+          width 50%
+          z-index 2
+
+
+    #detail-tray
+
+      h2
+        background #353535
+        box-shadow inset 0 1px 0 rgba(0,0,0,.4), 0 1px 1px rgba(0,0,0,.25)
+        color #fff
+        margin 0 -1px
+        padding 8px 10px
+        &.collapsed
+          //background #fff
+        &:hover, &:focus
+          text-decoration none
+      
+      .detail-inner
+        border medium none
+        padding 10px
+
+      a.detail-toggle
+        color #757575
+        display block
+        font-size 11px
+        margin 7px 0 0
+        text-decoration none
+        text-transform uppercase
+        i
+          margin -1px 0 0
+          opacity .5
+        &:hover, &:focus
+          color #4d4d4d
+          i
+            opacity 1
+
+    .detail-panel-bucket
+      padding 0 10px 5px
+
+    
+    h2
+      font-size 14px
+      line-height 14px
+      margin 8px 0 0
+      text-transform uppercase
+    
+    h4
+      font-size 14px
+      margin 10px 0 5px
+      text-shadow 1px 1px 1px rgba(255,255,255,.5)
+
+    hr
+      border-top 1px solid rgba(0,0,0,.2)
+      border-bottom 1px solid #fff
+      //border-top medium none
+      //border-bottom 1px solid rgba(0,0,0,.5)
+      //box-shadow 0 1px 1px rgba(255,255,255,.2)
+      margin 5px 0
+
+    form
+      margin 0
+
+    label
+      color #4d4d4d
+      font-size 10px
+      margin-bottom 0
+      text-transform uppercase
+
+      strong
+        display block
+
+    textarea
+      margin-bottom 5px
+      min-height 75px
+      resize vertical
+
+    input
+      font-size 12px
+      font-weight 700
+      margin-bottom 5px
+      text-align center
+      &#text-attribute-text,
+      &#label-attribute-text
+        text-align left
+      &:disabled
+        color #999
+
+    .input-append,
+    .input-prepend
+      margin-bottom 0
+      width 100%
+      .add-on
+        //background #757575
+        //border-color #555
+        color #808080
+        font-size 11px
+        height auto
+        text-shadow none
+        width 24px
+
+    .btn-group
+      margin-bottom 5px
+      width 100%
+
+      .btn
+        background #f1f1f1
+        color #333
+        text-shadow 1px 1px 1px rgba(255,255,255,.5)
+        &.active
+          background #a7a7a7
+          color #fff
+          text-shadow 1px 1px 1px rgba(0,0,0,.35)
+
+
+    span.selection-icon
+      background-position 50% 50%
+      background-repeat no-repeat
+      background-size 15px
+      display block
+      height 18px
+      width 100%
+      &#icon-shape-circle
+        background-image url('/images/detail-shape-circle.png')
+      &#icon-shape-square
+        background-image url('/images/detail-shape-square.png')
+      &#icon-shape-hexagon
+        background-image url('/images/detail-shape-hexagon.png')
+      &#icon-shape-triangle
+        background-image url('/images/detail-shape-triangle.png')
+      &#icon-shape-plus
+        background-image url('/images/detail-shape-plus.png')
+      &#icon-shape-none
+        background-image url('/images/detail-shape-none.png')
+
+
+
+    .dropdown
+      a.dropdown-toggle
+        background #eee
+        border 1px solid #ccc
+        border-radius 4px
+        color #555
+        display block
+        padding 0
+        span.selection-icon
+          background-color #fff
+          background-size 18px
+          border-right 1px solid #dccc
+          border-radius 4px 0 0 4px
+          display block
+          height 28px
+          padding 0
+          position relative
+          text-indent -99999px
+          max-width 64px
+        b.caret
+          opacity .5
+          position absolute
+          right 8px
+          top 5px
+      div.dropdown-menu
+        border medium none
+        border-radius 0
+        margin 0 0 0 1px
+        min-width 64px
+        max-width 64px
+        width 64px
+        padding 0
+        ul
+          list-style none
+          margin 0
+      button.btn
+        background #fbfbfb
+        border medium none
+        border-bottom 1px solid #d7d7d7
+        border-radius 0
+        display block
+        position relative
+        text-indent -99999px
+        width 100%
+        &.active
+          background #b4e6fa
+          box-shadow none
+     
+      &.open
+        a.dropdown-toggle
+          border-radius 4px 4px 4px 0
+          span.selection-icon
+            border-radius 4px 0 0 0
+
+
+
+    #baseline-attribute-interpolation
+      .btn
+        position relative
+        width 25%
+        span
+          background-position 50% 50%
+          background-repeat no-repeat
+          background-size 15px
+          float left
+          height 18px
+          text-indent -99999px
+          width 100%
+        #icon-interpolation-basis
+          background-image url('/images/detail-interpolation-basis.png')
+        #icon-interpolation-linear
+          background-image url('/images/detail-interpolation-linear.png')
+        #icon-interpolation-step-before
+          background-image url('/images/detail-interpolation-step-before.png')
+        #icon-interpolation-step-after
+          background-image url('/images/detail-interpolation-step-after.png')
+
+
+    .attribute-stroke-dasharray
+      input
+        border-left medium none
+        border-radius 0
+        float left
+        margin 0
+        width 16.6%
+        &:first-child
+          border-left 1px solid rgb(204, 204, 204)
+          border-radius 4px 0 0 4px
+        &:last-child
+          border-radius 0 4px 4px 0
+        &:nth-child(even)
+          background #f1f1f1
+
+    .attribute-stroke-linecap,
+    .attribute-label-align
+      .btn
+        padding 4px 0
+        position relative
+        width 28px
+        span
+          background-position 50% 50%
+          background-repeat no-repeat
+          background-size 15px
+          float left
+          height 18px
+          text-indent -99999px
+          width 100%
+        #icon-linecap-round
+          background-image url('/images/detail-linecap-round.png')
+        #icon-linecap-square
+          background-image url('/images/detail-linecap-square.png')
+        #icon-linecap-butt
+          background-image url('/images/detail-linecap-butt.png')
+
+        #icon-align-start
+          background-image url('/images/detail-align-left.png')
+        #icon-align-middle
+          background-image url('/images/detail-align-center.png')
+        #icon-align-end
+          background-image url('/images/detail-align-right.png')
+
+    .nav-tabs
+      border-bottom 1px solid #999
+      margin 5px 0 0
+      li
+        a
+          background-color rgba(0,0,0,.1)
+          border 1px solid transparent
+          color #333
+          margin-right 6px
+          padding-top 4px
+          padding-bottom 4px
+          width 89px
+          i
+            margin 1px 0 0
+        &.active a
+          background-color #d7d7d7
+          border 1px solid #999
+          border-bottom-color transparent
+        &:last-child a
+          margin-right 0
+    
+    .tab-content
+      overflow visible
+      padding-top 10px
+
+    .hidden-fields 
+      padding-top 5px
+
+    #marker-start,
+    #marker-end,
+    #baseline-curve
+      .btn
+        padding 4px 0
+      span.selection-icon
+        background-size 50px
+      a.dropdown-toggle
+        span.selection-icon
+          background-size 48px
+
+      #baseline-attribute-curve
+        span.selection-icon
+          background-position 50% 50%
+          &#icon-curve-basis
+            background-image url('/images/detail-curve-basis.png')
+          &#icon-curve-linear
+            background-image url('/images/detail-curve-linear.png')
+          &#icon-curve-step-before
+            background-image url('/images/detail-curve-step-before.png')
+          &#icon-curve-step-after
+            background-image url('/images/detail-curve-step-after.png')
+
+      #marker-start-attribute-type
+        span.selection-icon
+          background-position right 50%
+          &#icon-marker-none
+            background-image url('/images/detail-marker-none-start.png')
+          &#icon-marker-circle
+            background-image url('/images/detail-marker-circle-start.png')
+          &#icon-marker-square
+            background-image url('/images/detail-marker-square-start.png')
+          &#icon-marker-stem
+            background-image url('/images/detail-marker-stem-start.png')
+          &#icon-marker-equal-arrow-start
+            background-image url('/images/detail-marker-equal-arrow-start.png')
+          &#icon-marker-right-arrow-start
+            background-image url('/images/detail-marker-right-arrow-start.png')
+          &#icon-marker-sharp-arrow-start
+            background-image url('/images/detail-marker-sharp-arrow-start.png')
+          &#icon-marker-reverse-start
+            background-image url('/images/detail-marker-reverse-start.png')
+
+      #marker-end-attribute-type
+        span.selection-icon
+          background-position left 50%
+          &#icon-marker-none
+            background-image url('/images/detail-marker-none-end.png')
+          &#icon-marker-circle
+            background-image url('/images/detail-marker-circle-end.png')
+          &#icon-marker-square
+            background-image url('/images/detail-marker-square-end.png')
+          &#icon-marker-stem
+            background-image url('/images/detail-marker-stem-end.png')
+          &#icon-marker-equal-arrow-end
+            background-image url('/images/detail-marker-equal-arrow-end.png')
+          &#icon-marker-right-arrow-end
+            background-image url('/images/detail-marker-right-arrow-end.png')
+          &#icon-marker-sharp-arrow-end
+            background-image url('/images/detail-marker-sharp-arrow-end.png')
+          &#icon-marker-reverse-end
+            background-image url('/images/detail-marker-reverse-end.png')
+
+
+  #text-attribute-style
+    .btn
+      width 25%
+  #label-attribute-style
+    .btn
+      width 50%
+
+  canvas.fill-preview,
+  canvas.stroke-preview
+    border 1px solid #fbfbfb
+    border-radius 50%
+    height 10px
+    width 10px
+
+  a.fill-image
+    margin 2px 4px 0 0
+    opacity .6
+    i
+      display block
+   
+
+#detail .detail-panel-bucket table { margin: 0; }
+
+.axis
+  visibility visible
+
+.axis path,
+.axis line
+  fill none
+  stroke #d7d7d7
+  shape-rendering crispEdges
+
+.axis .minor
+  stroke #e9e9e9
+
+.axis .major text
+  fill #999
+  font-size 9px
+  opacity 0
+
+.x .major text
+  text-anchor middle !important
+
+.y .major text
+  text-anchor start !important
+
+path.domain
+  stroke none
+
+
+
+
+g.nodeGroup
+  text.artifact
+    text-rendering optimizeLegibility
+  rect.parent_bounds, path.origin
+    fill none
+    opacity 1
+    shape-rendering crispEdges
+    stroke #3498db
+    //stroke-dasharray 5,3
+    stroke-opacity 0
+    //stroke-width 2
+    transition stroke-opacity .5s
+  path.origin
+    stroke #000
+  &:hover
+    rect.parent_bounds
+      stroke-opacity .5
+  &.active
+    rect.parent_bounds
+      stroke-opacity .1
+    path.origin
+      stroke-opacity .2
+
+g.linkGroup
+  &.active
+    path.tickline
+      cursor crosshair
+    circle
+      cursor pointer
+
+g#node_controls
+  rect.bounding_box
+    fill none
+    shape-rendering crispEdges
+    stroke #000
+    //stroke-dasharray 5,3
+    stroke-opacity .15
+    //stroke-width 2
+    transition stroke-opacity .2s linear
+    &.active
+      stroke-opacity .35
+    &:hover
+      cursor pointer
+  circle.handle
+    cursor move
+    fill #fff
+    stroke #4d4d4d
+    //stroke-width 2
+
+g#link_controls
+  circle.point
+    cursor move
+    fill #fff
+    stroke #4d4d4d
+    //stroke-width 2
+    &.active
+      fill #4d4d4d
+
+
+
+rect.parent_bounds, 
+rect.bounding_box,
+path.origin
+  stroke-dasharray 4,2
+
+
+g.zoom_in
+  rect.parent_bounds,
+  rect.bounding_box,
+  path.origin,
+  circle.point,
+  circle.handle
+    stroke-width 1
+
+g.zoom_out
+  rect.parent_bounds,
+  rect.bounding_box,
+  path.origin,
+  circle.point,
+  circle.handle
+    stroke-width 2
+
+
+
+

@@ -3,11 +3,20 @@ exports.config =
   files:
     javascripts:
       joinTo:
-        'javascripts/app.js': /^app/
-        'javascripts/vendor.js': /^(?!app)/
+        'javascripts/editor.js'     : /^app(\/|\\)views(\/|\\)editor/
+        'javascripts/app.js'        : /^app(\/|\\)(?!views(\/|\\)editor)/
+        'javascripts/vendor.js'     : /^(?!app)/
+        #'javascripts/app.js'       : /^app/
+        #'javascripts/vendor.js'    : /^(?!app)/
 
     stylesheets:
-      joinTo: 'stylesheets/app.css'
+      joinTo: 
+        'stylesheets/editor.css'    : /^app(\/|\\)views(\/|\\)editor/
+        'stylesheets/app.css'       : /^(?!app(\/|\\)views(\/|\\)editor)/
+        #'stylesheets/app.css'
 
     templates:
-      joinTo: 'javascripts/app.js'
+      joinTo: 
+        'javascripts/editor.js'     : /^app(\/|\\)views(\/|\\)editor/
+        'javascripts/app.js'        : /^app(\/|\\)(?!views(\/|\\)editor)/
+        #'javascripts/app.js'

@@ -7,9 +7,12 @@
     "console-polyfill": "~0.1.0",
     "lodash": "~2.0.0",
     "jquery": "~2.0.2",
+		"d3": "*",
     "backbone-firebase.js": "https://raw.github.com/firebase/backfire/gh-pages/backbone-firebase.js",
     "normalize-css": "~2.1.2",
-    "h5bp-helpers": "~0.1.0"
+    "h5bp-helpers": "~0.1.0",
+		"fastclick": "*",
+    "keymaster": "https://raw.github.com/madrobby/keymaster/master/keymaster.js"
   },
   "overrides": {
     "backbone": {
