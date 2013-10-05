@@ -45,17 +45,11 @@ module.exports = class CanvasesController extends Controller
 
   show: (params) ->
     console.log 'CanvasesController#show', params
-    @model = new FirebaseModel null, firebase: config.firebase + '/canvases/' + params.id
-    @view = new CanvasView {model: @model} #, region: 'main'
-
-    #@model = new Canvas
-    #@canvasesRef = Chaplin.mediator.firebase.child('canvases')
-    #@canvasesRef.child(params.id).once 'value', (snapshot) =>
-    #  @model.set snapshot.val()
-      #@adjustTitle @model?.get('title') or 'Untitled'
-      #@compose 'canvas', =>
-      #@view = new CanvasView {model: @model} #, region: 'main'
-      #@compose 'canvas', CanvasView, {model: @model}
+    @canvasesRef = Chaplin.mediator.firebase.child('canvases')
+    @canvasesRef.child(params.id).once 'value', (snapshot) =>
+      @model = new Canvas snapshot.val()
+      @adjustTitle @model?.get('title')
+      @view = new CanvasView {model: @model, autoRender: true}
 
   edit: (params) ->
     console.log 'CanvasesController#edit', params

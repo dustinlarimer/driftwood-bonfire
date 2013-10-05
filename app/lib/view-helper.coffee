@@ -148,8 +148,8 @@ Handlebars.registerHelper 'markdown', (options) ->
 ###
 
 register 'route', (routeName, params..., options) ->
-  if params[0]?
-    Chaplin.helpers.reverse routeName, params
+  #if params[0]?
+  Chaplin.helpers.reverse routeName, params
 
 register 'compare', (lvalue, operator, rvalue, options) ->
   operators = undefined
