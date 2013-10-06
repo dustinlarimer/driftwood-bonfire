@@ -10,8 +10,8 @@ module.exports = class ToolPointerView extends View
     super
     console.log '[-- Pointer tool activated --]'
     
-    $('#toolbar button.active').removeClass('active')
-    $('#toolbar button#tool-pointer').addClass('active')
+    @$('#toolbar button.active').removeClass('active')
+    @$('#toolbar button#tool-pointer').addClass('active')
 
     @snap = 25
 
@@ -62,11 +62,11 @@ module.exports = class ToolPointerView extends View
     key 'control+v', 'editor', @keypress_paste
     #key.setScope('editor')
 
-    @controls = mediator.controls.append('svg:g').attr('id', 'pointer_controls')
+    @controls = mediator.canvas.controls.append('svg:g').attr('id', 'pointer_controls')
 
     @node_range=
-      x: _.map(mediator.nodes.models, (node, index)=> node.get('x'))
-      y: _.map(mediator.nodes.models, (node, index)=> node.get('y'))
+      #x: _.map(mediator.nodes.models, (node, index)=> node.get('x'))
+      #y: _.map(mediator.nodes.models, (node, index)=> node.get('y'))
 
     @nodes = d3.selectAll('g.nodeGroup')
       .attr('cursor', 'pointer')

@@ -1,0 +1,75 @@
+@import 'nib'
+
+/* ==========================================================================
+   Editor Toolbar styles
+   ========================================================================== */
+
+#controls-container
+  position absolute
+  top 0
+  z-index 1
+
+#toolbar
+  background rgba(255,255,255,.75)
+  height 100%
+  padding 62px 10px 0
+  position fixed
+  width 50px
+  z-index 1
+
+  hr
+    border-top 1px solid rgba(0,0,0,.2)
+    border-bottom 1px solid #fff
+    margin 0 0 12px
+  
+  .btn-group+.btn-group
+    margin-left 0
+  
+  .btn-group > .btn
+    background #fff
+    border 1px solid rgba(0,0,0,.15)
+    border-radius 4px
+    box-shadow none
+    height 28px
+    margin 0 0 12px
+    padding 4px
+    text-align center
+    transition background .25s
+    width 28px
+    &:hover, &:focus
+      background rgb(240,245,250)
+    &.active
+      background rgb(180,230,250)
+
+  .btn-group-vertical-bottom
+    bottom 0px
+    display block
+    position absolute
+
+  #tool-pointer,
+  #tool-node,
+  #tool-link,
+  #tool-axis,
+  #tool-text,
+  #tool-eyedropper
+    background-position 50% 50%
+    background-repeat no-repeat
+    background-size 100%
+
+  #tool-pointer
+    background-image url('/images/toolbar-pointer.png')
+
+  #tool-node
+    background-image url('/images/toolbar-node.png')
+
+  #tool-link
+    background-image url('/images/toolbar-link.png')
+
+  #tool-axis
+    background-image url('/images/toolbar-axis.png')
+
+  #tool-text
+    background-image url('/images/toolbar-text.png')
+
+  #tool-eyedropper
+    background-image url('/images/toolbar-eyedropper.png')

@@ -3,6 +3,7 @@ mediator = require 'mediator'
 CanvasView = require 'views/canvas/canvas-view'
 HeaderView = require './header-view'
 DetailView = require './detail-view'
+ControlsView = require './controls-view'
 
 ToolPointerView    = require './controls/tool-pointer-view'
 ToolNodeView       = require './controls/tool-node-view'
@@ -50,11 +51,13 @@ module.exports = class EditorView extends CanvasView
     @subview('header_view').bind 'canvas:update', (data) =>
       @model.set data
     
-    #@subview 'detail_view', new DetailView model: null, region: 'detail'
-    #@subview 'tool_view', @toolbar_view = null
+    @subview 'controls_view', new ControlsView region: 'controls'
     
-    #@activate_pointer()
-    #@$('button').tooltip({placement: 'right'})
+    #@subview 'detail_view', new DetailView model: null, region: 'detail'
+    @subview 'tool_view', @toolbar_view = null
+    
+    @activate_pointer()
+    @$('button').tooltip({placement: 'right'})
 
     @subscribeEvent 'node_created', @refresh_preview
     @subscribeEvent 'node_updated', @refresh_preview
@@ -76,7 +79,7 @@ module.exports = class EditorView extends CanvasView
 
   activate_pointer: =>
     @removeSubview 'tool_view'
-    @toolbar_view = new ToolPointerView el: $('svg', @el), region: 'header'
+    @toolbar_view = new ToolPointerView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
 
@@ -87,7 +90,7 @@ module.exports = class EditorView extends CanvasView
     mediator.selected_link = null
     mediator.selected_axis = null
     mediator.publish 'clear_active'
-    @toolbar_view = new ToolNodeView el: $('svg', @el), region: 'header'
+    @toolbar_view = new ToolNodeView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
 
@@ -98,7 +101,7 @@ module.exports = class EditorView extends CanvasView
     mediator.selected_link = null
     mediator.selected_axis = null
     mediator.publish 'clear_active'
-    @toolbar_view = new ToolLinkView el: $('svg', @el), region: 'header'
+    @toolbar_view = new ToolLinkView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
 
@@ -109,7 +112,7 @@ module.exports = class EditorView extends CanvasView
     mediator.selected_link = null
     mediator.selected_axis = null
     mediator.publish 'clear_active'
-    @toolbar_view = new ToolAxisView el: $('svg', @el), region: 'header'
+    @toolbar_view = new ToolAxisView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
 
@@ -120,13 +123,13 @@ module.exports = class EditorView extends CanvasView
     mediator.selected_link = null
     mediator.selected_axis = null
     mediator.publish 'clear_active'
-    @toolbar_view = new ToolTextView el: $('svg', @el), region: 'header'
+    @toolbar_view = new ToolTextView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
 
   activate_eyedropper: =>
     @removeSubview 'tool_view'
-    @toolbar_view = new ToolEyedropperView el: $('svg', @el), region: 'header'
+    @toolbar_view = new ToolEyedropperView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
 
