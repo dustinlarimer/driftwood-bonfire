@@ -11,21 +11,23 @@
   margin 0
   
   .container
-    //padding 0
+    padding 0 8px 0 0
     max-width 100%
   
-  .brand
-    font-size 18px
-    margin 0
-    padding 10px 10px !important
+  .navbar-brand
+    padding 15px 16px
     text-align center
-    text-shadow none
     width 50px
 
   button
     margin-top 8px
 
   form.navbar-form
+    //display block
+    left 65px
+    padding 0
+    position absolute
+    right 0px
     input
       border-radius 2px
       color #555
@@ -41,3 +43,93 @@
       font-size 14px
       font-weight lighter
       line-height 22px
+
+  .navbar-right 
+    padding 0
+    ul.pull-left
+      right auto
+
+  .canvas-members
+    border-left 1px solid #d7d7d7
+    padding 0 15px 3px
+
+  ul.member-avatar-list
+    list-style none
+    margin 0
+    padding 0
+
+    li > button
+      height 34px
+      margin 8px 5px 0 0
+      padding 0
+      width 34px
+      &.member
+        border medium none
+      &:hover
+        text-decoration none
+      img
+        border-radius 4px
+        &.offline
+          -webkit-filter grayscale(100%) brightness(85%)
+      span.glyphicon
+        display block
+        margin-top -3px
+
+
+@media (max-width: 767px)
+	.navbar 
+    background #fff
+    .container
+      padding 0
+    .navbar-header
+      form.navbar-form
+        border medium none
+        padding 0 15px
+        right 110px
+      .btn-group.visible-xs
+        margin-right 8px
+    .navbar-collapse
+      border medium none
+      border-top 1px solid #d7d7d7
+      margin 0
+      padding 0 10px
+      .navbar-nav
+        margin 3px 0 10px
+
+    .canvas-publish
+      width 100%
+      .btn-group
+        width 100%
+        .dropdown-menu
+          padding-top 50px
+          li
+            display block
+            text-align center
+            a
+              padding 8px 0
+              &:hover, &:focus
+                color inherit
+            &.dropdown-header
+              padding 5px 0 0
+
+
+      .user-action-download
+        width 10%
+        .dropdown-menu
+          float none !important
+          width 1000%
+
+
+      .user-action-publish
+        width 90%
+        button
+          width 90%
+          &.dropdown-toggle
+            width 10%
+        .dropdown-menu
+          width 90%
+
+
+
+
+

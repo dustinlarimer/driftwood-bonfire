@@ -51,13 +51,14 @@ module.exports = class EditorView extends CanvasView
     @subview('header_view').bind 'canvas:update', (data) =>
       @model.set data
     
-    @subview 'controls_view', new ControlsView region: 'controls'
-    
     #@subview 'detail_view', new DetailView model: null, region: 'detail'
-    @subview 'tool_view', @toolbar_view = null
     
+    @subview 'controls_view', new ControlsView model: mediator.current_user.profile, region: 'controls'
+    
+    @subview 'tool_view', @toolbar_view = null
     @activate_pointer()
-    @$('button').tooltip({placement: 'right'})
+    @$('.controls-container button').tooltip({placement: 'right'})
+    @$('.header-container button').tooltip({placement: 'bottom'})
 
     @subscribeEvent 'node_created', @refresh_preview
     @subscribeEvent 'node_updated', @refresh_preview
@@ -85,22 +86,29 @@ module.exports = class EditorView extends CanvasView
 
   activate_node: =>
     @removeSubview 'tool_view'
+    ###
     mediator.selected_nodes = []
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null
     mediator.publish 'clear_active'
+    ###
     @toolbar_view = new ToolNodeView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
+    @subview('tool_view').bind 'create:node', (data) =>
+      console.log 'Creating a node ', data
+      #mediator.nodes.create _node, {wait: true}
     return false
 
   activate_link: =>
     @removeSubview 'tool_view'
+    ###
     mediator.selected_nodes = []
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null
     mediator.publish 'clear_active'
+    ###
     @toolbar_view = new ToolLinkView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false

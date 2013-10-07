@@ -10,8 +10,8 @@ module.exports = class ToolPointerView extends View
     super
     console.log '[-- Pointer tool activated --]'
     
-    @$('#toolbar button.active').removeClass('active')
-    @$('#toolbar button#tool-pointer').addClass('active')
+    $('#toolbar button.active').removeClass('active')
+    $('#toolbar button#tool-pointer').addClass('active')
 
     @snap = 25
 

@@ -1,6 +1,5 @@
 mediator = require 'mediator'
 utils = require 'lib/utils'
-#zoom_helpers = require '/editor/lib/zoom-helpers'
 View = require 'views/base/view'
 
 Path = require 'models/artifacts/path'
@@ -10,11 +9,12 @@ module.exports = class ToolNodeView extends View
   
   initialize: ->
     super
-    console.log 'Initializing ToolNodeView'    
+    console.log 'Initializing ToolNodeView'
+      
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-node').addClass('active')
     
-    mediator.outer.attr('cursor', 'crosshair')
+    mediator.canvas.outer.attr('cursor', 'crosshair')
     d3.select('#canvas_elements_background')
       .call(d3.behavior.drag()
         .on('dragstart', @start_node)
@@ -33,7 +33,7 @@ module.exports = class ToolNodeView extends View
     @links = d3.selectAll('g.linkGroup').attr('pointer-events', 'none')
 
   remove: ->
-    mediator.outer.attr('cursor', 'default')
+    mediator.canvas.outer.attr('cursor', 'default')
     d3.select('#canvas_elements_background')
       .call(d3.behavior.drag()
         .on('dragstart', null)
@@ -62,7 +62,7 @@ module.exports = class ToolNodeView extends View
     @start_point=
       x: Math.round(coordinates.x)
       y: Math.round(coordinates.y)
-    @ghost_node = mediator.controls.selectAll('g#newNode')
+    @ghost_node = mediator.canvas.controls.selectAll('g#newNode')
       .data([@start_point])
     @ghost_node
       .enter()
@@ -121,7 +121,7 @@ module.exports = class ToolNodeView extends View
       x: @start_point.x
       y: @start_point.y
       nested: [ (new Path { height: _length, width: _length }).toJSON(), (new Text).toJSON() ]
-    mediator.nodes.create _node, {wait: true}
+    @trigger 'create:node', _node
     @reset()
 
 

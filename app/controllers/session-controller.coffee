@@ -3,6 +3,7 @@ utils = require 'lib/utils'
 Singly = require 'lib/services/singly'
 Controller = require 'controllers/base/controller'
 
+FirebaseModel = require 'models/base/firebase-model'
 Users = require 'models/users'
 User = require 'models/user'
 
@@ -130,6 +131,11 @@ module.exports = class SessionController extends Controller
     # Grab the attributes you want for this user's record...
     newUser = _.pick(session, 'id', 'email')
     
+    ###
+    Chaplin.mediator.current_user = new FirebaseModel newUser, firebase: config.firebase + '/users/' + newUser.id
+    console.log Chaplin.mediator.current_user
+    ###
+    
     Chaplin.mediator.users = new Users
     Chaplin.mediator.current_user = new User newUser
     
@@ -140,6 +146,10 @@ module.exports = class SessionController extends Controller
           success: (model, response) => 
             unless Chaplin.mediator.current_user.get('profile_id')?
               @redirectTo 'users#join', session
+            else
+              _handle = Chaplin.mediator.current_user.get('profile_id')
+              Chaplin.mediator.current_user.profile = new FirebaseModel null, firebase: config.firebase + '/profiles/' + _handle
+              console.log Chaplin.mediator.current_user
             @publishLogin()
       error: (model, response) =>
         console.log 'Error! ', model
