@@ -1,7 +1,8 @@
 config = require 'config'
 mediator = require 'mediator'
 
-FirebaseCollection = require 'models/base/firebase-collection'
+#FirebaseCollection = require 'models/base/firebase-collection'
+FirebaseModel = require 'models/base/firebase-model'
 
 CanvasView = require 'views/canvas/canvas-view'
 HeaderView = require './header-view'
@@ -18,11 +19,18 @@ ToolEyedropperView = require './controls/tool-eyedropper-view'
 MembersDialogView = require './dialog/members-dialog-view'
 
 module.exports = class EditorView extends CanvasView
+  #autoRender: false
   id: 'editor-container'
   
   initialize: ->
     super
     
+    if @model?.get('id')?
+      @_set_presence()
+    else
+      @model.once 'sync', => 
+        @_set_presence()
+
     @subscribeEvent '!showInvite', @showMembersView
     
     @delegate 'click', '#tool-pointer',    @activate_pointer
@@ -54,39 +62,13 @@ module.exports = class EditorView extends CanvasView
     super
     console.log 'Rendering EditorView [...]', @model
     
-    canvas_id = @model.get('id')
-    user_id = Chaplin.mediator.current_user.get('id')
-    
-    @presence = new FirebaseCollection null, firebase: config.firebase + '/canvases/' + canvas_id + '/members'
-    @current_status = @presence.find({id: user_id})
-    
-    @connectedRef = Chaplin.mediator.firebase.child('.info/connected')
-    @connectedRef.on 'value', (snapshot) =>
-      if snapshot.val() is true
-        @current_status.set
-          online: true
-          latest: Firebase.ServerValue.TIMESTAMP
-    ###
-    @memberStatusRef = Chaplin.mediator.firebase.child('canvases').child(canvas_id).child('members').child(user_id)
-    @connectedRef = Chaplin.mediator.firebase.child('.info/connected')
-    @connectedRef.on 'value', (snapshot) =>
-      if snapshot.val() is true
-        @memberStatusRef.onDisconnect().update
-          online: false
-          latest: Firebase.ServerValue.TIMESTAMP
-        @memberStatusRef.update
-          online: true
-          latest: Firebase.ServerValue.TIMESTAMP
-    ###
-    
-    @subview 'header_view', new HeaderView model: @model, region: 'header'
-    @subview('header_view').bind 'canvas:update', (data) =>
+    @subview 'header-view', new HeaderView model: @model,  region: 'header'
+    @subview('header-view').bind 'canvas:update', (data) =>
       @model.set data
     
     #@subview 'detail_view', new DetailView model: null, region: 'detail'
     
     @subview 'controls_view', new ControlsView model: mediator.current_user.profile, region: 'controls'
-    
     @subview 'tool_view', @toolbar_view = null
     @activate_pointer()
     @$('.controls-container button').tooltip({placement: 'right'})
@@ -103,19 +85,30 @@ module.exports = class EditorView extends CanvasView
     @subscribeEvent 'axis_updated', @refresh_preview
     @subscribeEvent 'axis_removed', @refresh_preview
 
-  destroy: ->
-    super
-    console.log 'here'
+  _set_presence: =>
+    #@current_status = new FirebaseModel {id: mediator.current_user.get('id')},
+    #  firebase: config.firebase + '/canvases/' + @model.get('id') + '/members/' + mediator.current_user.get('id')
+    
+    @presenceRef = @model.firebase.child('members').child(mediator.current_user.get('id'))
+    @connectedRef = mediator.firebase.child('.info/connected')
+    @connectedRef.on 'value', (snapshot) =>
+      if snapshot.val() is true
+        @presenceRef.onDisconnect().update
+          online: false
+          latest: Firebase.ServerValue.TIMESTAMP
+        @presenceRef.update
+          online: true
+          latest: Firebase.ServerValue.TIMESTAMP
+      else
+        console.log 'not here yet!'
+
+  _clear_presence: =>
+    @presenceRef.update
+      online: false
+      latest: Firebase.ServerValue.TIMESTAMP
 
   dispose: ->
-    #@trigger 'disconnect'
-    if @model? and @current_status?
-      @current_status.set
-        online: false
-        latest: Firebase.ServerValue.TIMESTAMP
-    console.log '@model:', @model
-    console.log '@current_status:', @current_status
-    #@presence.dispose()
+    @_clear_presence()
     super
     
 

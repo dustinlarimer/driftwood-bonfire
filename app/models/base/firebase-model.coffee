@@ -49,6 +49,9 @@ module.exports = class FirebaseModel extends Model
     @firebase.ref().update modelObj, @_log  if _.size(modelObj)
 
   _modelChanged: (snap) ->
+    # Make sure this little fucker is still around.
+    return if @disposed
+    
     # Unset attributes that have been deleted from the server
     # by comparing the keys that have been removed.
     newModel = snap.val()

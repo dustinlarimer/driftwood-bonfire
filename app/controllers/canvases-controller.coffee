@@ -53,11 +53,12 @@ module.exports = class CanvasesController extends Controller
 
   show: (params) ->
     console.log 'CanvasesController#show', params
-    @canvasesRef = Chaplin.mediator.firebase.child('canvases')
-    @canvasesRef.child(params.id).once 'value', (snapshot) =>
-      @model = new Canvas snapshot.val()
-      @adjustTitle @model?.get('title')
-      @view = new CanvasView {model: @model, autoRender: true}
+    #@canvasesRef = Chaplin.mediator.firebase.child('canvases')
+    #@canvasesRef.child(params.id).once 'value', (snapshot) =>
+    #  @model = new Canvas snapshot.val()
+    @model = new FirebaseModel null, firebase: config.firebase + '/canvases/' + params.id
+    @adjustTitle @model?.get('title')
+    @view = new CanvasView {model: @model}
 
   edit: (params, route) ->
     console.log 'CanvasesController#edit', params, route
@@ -66,32 +67,10 @@ module.exports = class CanvasesController extends Controller
       console.log '[Loading] /javascripts/editor.js'
       utils.loadLib '/javascripts/editor.js', =>
         EditorView = require 'views/editor/editor-view'
-        @edit(params)
+        @edit(params, route)
     else
       console.log 'EditorController is online'
-      @model = new FirebaseModel null, firebase: config.firebase + '/canvases/' + params.id
+      @model = new FirebaseModel {id: params.id}, firebase: config.firebase + '/canvases/' + params.id
       @view = new EditorView {model: @model}
-      
-      if @model?.get('id')?
-        @view.render()
-      else
-        @model.once 'sync', => @view.render()
-
       @model.on 'change:title', => @adjustTitle @model?.get('title')
-      @model.on 'all', (d,a) => console.log d, a
-      
-
-  ###
-  _set_presence: (model) =>
-    console.log 'present!'
-    @memberStatusRef = Chaplin.mediator.firebase.child('canvases').child(model.get('id')).child('members').child(Chaplin.mediator.current_user.get('id'))
-    @connectedRef = Chaplin.mediator.firebase.child('.info/connected')
-    @connectedRef.on 'value', (snapshot) =>
-      if snapshot.val() is true
-        @memberStatusRef.onDisconnect().update
-          online: false
-          latest: Firebase.ServerValue.TIMESTAMP
-        @memberStatusRef.update
-          online: true
-          latest: Firebase.ServerValue.TIMESTAMP
-  ###
+      #@model.on 'all', (d,a) => console.log d, a

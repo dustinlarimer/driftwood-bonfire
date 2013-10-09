@@ -7,7 +7,7 @@ View = require 'views/base/view'
 #AxisView = require 'views/canvas/artifacts/axis-view'
 
 module.exports = class CanvasView extends View
-  autoRender: false
+  autoRender: true
   container: 'body'
   containerMethod: 'html'
   className: 'canvas-container'

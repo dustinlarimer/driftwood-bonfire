@@ -7,31 +7,12 @@
 			
 			
 			<div class="col-md-3 col-sm-4">
-				<div class="navbar-header">
-					<a class="navbar-brand" href="{{route "canvases#show" id}}">&larr;</a>
-					<form class="navbar-form navbar-left" onsubmit="return false">
-						<input id="canvas-attr-title" type="text" placeholder="Title" class="form-control input-lg data-canvas-title" value="{{title}}">
-					</form>
-					<div class="btn-group pull-right visible-xs">
-						<button type="button" class="btn btn-default" data-toggle="collapse" data-target=".canvas-members">
-							<span class="sr-only">Toggle Collaborators</span> 
-							<span class="glyphicon glyphicon-user"></span>
-						</button>
-						<button type="button" class="btn btn-default" data-toggle="collapse" data-target=".canvas-publish">
-							<span class="sr-only">Toggle Publish Actions</span> 
-							<span class="glyphicon glyphicon-share"></span>
-						</button>
-					</div>
-				</div>	
+				<div class="navbar-header canvas-title"></div>
 			</div>
-			
-			
 			
 			<div class="col-md-6 col-sm-5">				
 				<div class="collapse navbar-collapse navbar-left canvas-members"></div>
 			</div>
-			
-			
 			
 			<div class="col-md-3 col-sm-3">
 				<div class="collapse navbar-collapse navbar-right canvas-publish">
