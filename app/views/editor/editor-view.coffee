@@ -1,4 +1,7 @@
+config = require 'config'
 mediator = require 'mediator'
+
+FirebaseCollection = require 'models/base/firebase-collection'
 
 CanvasView = require 'views/canvas/canvas-view'
 HeaderView = require './header-view'
@@ -12,11 +15,15 @@ ToolAxisView       = require './controls/tool-axis-view'
 ToolTextView       = require './controls/tool-text-view'
 ToolEyedropperView = require './controls/tool-eyedropper-view'
 
+MembersDialogView = require './dialog/members-dialog-view'
+
 module.exports = class EditorView extends CanvasView
   id: 'editor-container'
   
   initialize: ->
     super
+    
+    @subscribeEvent '!showInvite', @showMembersView
     
     @delegate 'click', '#tool-pointer',    @activate_pointer
     @delegate 'click', '#tool-node',       @activate_node
@@ -45,7 +52,32 @@ module.exports = class EditorView extends CanvasView
 
   render: ->
     super
-    console.log 'Rendering EditorView [...]'
+    console.log 'Rendering EditorView [...]', @model
+    
+    canvas_id = @model.get('id')
+    user_id = Chaplin.mediator.current_user.get('id')
+    
+    @presence = new FirebaseCollection null, firebase: config.firebase + '/canvases/' + canvas_id + '/members'
+    @current_status = @presence.find({id: user_id})
+    
+    @connectedRef = Chaplin.mediator.firebase.child('.info/connected')
+    @connectedRef.on 'value', (snapshot) =>
+      if snapshot.val() is true
+        @current_status.set
+          online: true
+          latest: Firebase.ServerValue.TIMESTAMP
+    ###
+    @memberStatusRef = Chaplin.mediator.firebase.child('canvases').child(canvas_id).child('members').child(user_id)
+    @connectedRef = Chaplin.mediator.firebase.child('.info/connected')
+    @connectedRef.on 'value', (snapshot) =>
+      if snapshot.val() is true
+        @memberStatusRef.onDisconnect().update
+          online: false
+          latest: Firebase.ServerValue.TIMESTAMP
+        @memberStatusRef.update
+          online: true
+          latest: Firebase.ServerValue.TIMESTAMP
+    ###
     
     @subview 'header_view', new HeaderView model: @model, region: 'header'
     @subview('header_view').bind 'canvas:update', (data) =>
@@ -58,7 +90,6 @@ module.exports = class EditorView extends CanvasView
     @subview 'tool_view', @toolbar_view = null
     @activate_pointer()
     @$('.controls-container button').tooltip({placement: 'right'})
-    @$('.header-container button').tooltip({placement: 'bottom'})
 
     @subscribeEvent 'node_created', @refresh_preview
     @subscribeEvent 'node_updated', @refresh_preview
@@ -72,7 +103,21 @@ module.exports = class EditorView extends CanvasView
     @subscribeEvent 'axis_updated', @refresh_preview
     @subscribeEvent 'axis_removed', @refresh_preview
 
+  destroy: ->
+    super
+    console.log 'here'
 
+  dispose: ->
+    #@trigger 'disconnect'
+    if @model? and @current_status?
+      @current_status.set
+        online: false
+        latest: Firebase.ServerValue.TIMESTAMP
+    console.log '@model:', @model
+    console.log '@current_status:', @current_status
+    #@presence.dispose()
+    super
+    
 
   # ----------------------------------
   # TOOLBAR METHODS
@@ -209,3 +254,7 @@ module.exports = class EditorView extends CanvasView
       #width: _square
     @model.save preview_data: data
     console.log '[-Refresh Preview-]'
+
+  showMembersView: (collection) =>
+    @subview 'dialog', new MembersDialogView model: @model, region: 'dialog'
+

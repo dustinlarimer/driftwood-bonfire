@@ -25,7 +25,7 @@ module.exports = class FirebaseModel extends Model
         throw new Error("Invalid firebase reference created")
     
     # Add handlers for remote events.
-    @firebase.on "value", @_modelChanged.bind(this)
+    @firebase.on "value", _.bind @_modelChanged, this
     @_listenLocalChange true
   
   

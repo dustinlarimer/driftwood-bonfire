@@ -17,6 +17,7 @@ module.exports = class CanvasView extends View
     controls: '.controls-container'
     stage: '.stage-container'
     detail: '.detail-container'
+    dialog: '.dialog-container'
   template: template
 
   initialize: ->

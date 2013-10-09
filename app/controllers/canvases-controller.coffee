@@ -32,9 +32,17 @@ module.exports = class CanvasesController extends Controller
           console.log error
         else if committed
           canvas=
-            id: snapshot.val()
-              
-          @canvasesRef.child(canvas.id).set({id: canvas.id, owner_id: owner.user_id})
+            id: snapshot.val()          
+            date_created: new Date().getTime()
+            owner_id: owner.user_id
+            title: 'Untitled'
+          @canvasesRef.child(canvas.id).set(canvas)
+          @canvasesRef.child(canvas.id).child('members').child(owner.user_id).set
+            user_id: owner.user_id
+            role: 'editor'
+            date_joined: new Date().getTime()
+            profile_id: owner.profile_id
+
           @profilesRef.child('canvases').child('canvas_' + canvas.id).transaction ((currentData) =>
               canvas if currentData is null
             ), (error, committed, snapshot) =>
@@ -51,8 +59,8 @@ module.exports = class CanvasesController extends Controller
       @adjustTitle @model?.get('title')
       @view = new CanvasView {model: @model, autoRender: true}
 
-  edit: (params) ->
-    console.log 'CanvasesController#edit', params
+  edit: (params, route) ->
+    console.log 'CanvasesController#edit', params, route
     
     unless EditorView?
       console.log '[Loading] /javascripts/editor.js'
@@ -64,10 +72,26 @@ module.exports = class CanvasesController extends Controller
       @model = new FirebaseModel null, firebase: config.firebase + '/canvases/' + params.id
       @view = new EditorView {model: @model}
       
-      if @model.get('id')?
+      if @model?.get('id')?
         @view.render()
       else
         @model.once 'sync', => @view.render()
 
       @model.on 'change:title', => @adjustTitle @model?.get('title')
       @model.on 'all', (d,a) => console.log d, a
+      
+
+  ###
+  _set_presence: (model) =>
+    console.log 'present!'
+    @memberStatusRef = Chaplin.mediator.firebase.child('canvases').child(model.get('id')).child('members').child(Chaplin.mediator.current_user.get('id'))
+    @connectedRef = Chaplin.mediator.firebase.child('.info/connected')
+    @connectedRef.on 'value', (snapshot) =>
+      if snapshot.val() is true
+        @memberStatusRef.onDisconnect().update
+          online: false
+          latest: Firebase.ServerValue.TIMESTAMP
+        @memberStatusRef.update
+          online: true
+          latest: Firebase.ServerValue.TIMESTAMP
+  ###

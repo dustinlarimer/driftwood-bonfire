@@ -27,6 +27,10 @@ register 'ifIsOwner', (id, options) ->
   method = if Chaplin.mediator.current_user?.get('id') is id then options.fn else options.inverse
   method this
 
+register 'ifIsEditor', (members, options) ->
+  method = if Chaplin.mediator.current_user?.get('id') in _.keys(members) then options.fn else options.inverse
+  method this
+
 ###
 register 'ifIsRepoAdmin', (options) ->
   user = Chaplin.mediator.current_user
