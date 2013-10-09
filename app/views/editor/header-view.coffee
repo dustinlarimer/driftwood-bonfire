@@ -43,5 +43,6 @@ module.exports = class HeaderView extends View
     @canvas_id = @model.get('id')
     @user_id = mediator.current_user.get('id')
     @members = new FirebaseCollection null, firebase: config.firebase + '/canvases/' + @canvas_id + '/members'
+    @members.sort_descending('online')
     @subview 'canvas-members', new HeaderMembersView collection: @members, region: 'members'
     
