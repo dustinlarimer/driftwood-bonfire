@@ -51,6 +51,7 @@
 
   .canvas-members
     border-left 1px solid #d7d7d7
+    border-right 1px solid #d7d7d7
     padding 0 15px 3px
 
   ul.member-avatar-list
@@ -60,11 +61,12 @@
 
     li > button
       height 34px
-      margin 8px 5px 0 0
+      margin 8px 0 0
       padding 0
       width 34px
       &.member
         border medium none
+        margin 8px 5px 0 0
       &:hover
         text-decoration none
       img
@@ -75,6 +77,19 @@
         //display block
         //margin-top -3px
 
+  ul.member-action-list
+    //border 1px solid #d7d7d7
+    border-radius 4px
+    margin-top 8px
+    li
+      a
+        background #d7d7d7
+        height 32px
+        float left
+        margin-right 1px
+        padding 0
+      &.current_member > a
+        background #999
 
 @media (max-width: 767px)
 	.navbar 

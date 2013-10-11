@@ -84,6 +84,10 @@ module.exports = class EditorView extends CanvasView
     @subscribeEvent 'axis_created', @refresh_preview
     @subscribeEvent 'axis_updated', @refresh_preview
     @subscribeEvent 'axis_removed', @refresh_preview
+    
+    #setInterval =>
+    #  @publishEvent 'update:node#5', {message: 'get it?'}
+    #, 2500
 
   _set_presence: =>
     #@current_status = new FirebaseModel {id: mediator.current_user.get('id')},
