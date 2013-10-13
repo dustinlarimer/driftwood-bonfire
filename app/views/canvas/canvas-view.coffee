@@ -2,7 +2,11 @@ mediator = require 'mediator'
 template = require './templates/canvas'
 View = require 'views/base/view'
 
-#NodeView = require 'views/canvas/artifacts/node-view'
+Nodes = require 'models/canvas/artifacts/nodes'
+#Links = require 'models/canvas/artifacts/links'
+#Axes = require 'models/canvas/artifacts/axes'
+
+NodeView = require 'views/canvas/artifacts/node-view'
 #LinkView = require 'views/canvas/artifacts/link-view'
 #AxisView = require 'views/canvas/artifacts/axis-view'
 
@@ -27,6 +31,14 @@ module.exports = class CanvasView extends View
     $(window).on 'resize', @refresh
     key 'command+1', @reset_zoom
     key 'control+1', @reset_zoom
+    
+    mediator.canvas.nodes = new Nodes
+    #mediator.canvas.links = new Links
+    #mediator.canvas.axes = new Axes
+
+  dispose: ->
+    mediator.canvas = {}
+    super
     
 
   # ----------------------------------
@@ -72,6 +84,95 @@ module.exports = class CanvasView extends View
 
 
   # ----------------------------------
+  # Initialize Artifacts
+  # ----------------------------------
+
+  init_artifacts: ->
+    _.each(mediator.canvas.nodes.models, (node,i) => 
+      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
+    ) #if mediator.nodes?
+    @subscribeEvent 'node_created', @add_node
+    @subscribeEvent 'node_updated', @update_node
+    @subscribeEvent 'node_removed', @remove_node
+    @build_nodes()
+
+
+  # ----------------------------------
+  # NODES
+  # ----------------------------------
+
+  drag_node_start: (d, i) ->
+    mediator.publish 'refresh_canvas'
+    d3.event.sourceEvent.stopPropagation()
+
+  drag_node_move: (d, i) ->
+    d3.event.sourceEvent.stopPropagation()
+    d.rotate = d.model.get('rotate')
+    d.x = d3.event.x
+    d.y = d3.event.y
+    d.px = d.x
+    d.py = d.y
+    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
+
+  drag_node_end: (d, i) ->
+    mediator.publish 'refresh_canvas'
+
+  add_node: (node) ->
+    force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
+    @build_nodes()
+
+  update_node: (node) ->
+    _.each(force.nodes(), (d,i)->
+      if d.id is node.id
+        d.x = node.get('x')
+        d.y = node.get('y') 
+        d.opacity = node.get('opacity')/100
+        d.rotate = node.get('rotate')
+        d.px = d.x
+        d.py = d.y
+    )
+    @refresh()
+
+  remove_node: (node_id) ->
+    _node = _.findWhere(force.nodes(), {id: node_id})
+    _index = force.nodes().indexOf(_node)
+    force.nodes().splice(_index,1)
+    @refresh()
+
+  build_nodes: ->
+  
+    node_drag_events = d3.behavior.drag()
+      .on('dragstart', @drag_node_start)
+      .on('drag', @drag_node_move)
+      .on('dragend', @drag_node_end)
+  
+    mediator.canvas.node = mediator.canvas.vis
+      .selectAll('g.nodeGroup')
+      .data(force.nodes())
+  
+    mediator.canvas.node
+      .enter()
+      .append('svg:g')
+      .attr('class', 'nodeGroup')
+      .attr('cursor', 'pointer')
+      .attr('pointer-events', 'painted')
+      .attr('opacity', (d)-> d.model.get('opacity')/100)
+      .attr('transform', (d)->
+        return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.model.get('rotate') + ')'
+      )
+      .each((d,i)-> d.view = new NodeView({model: d.model, el: @}))
+      .call(node_drag_events)
+  
+    mediator.canvas.node
+      .exit()
+      .remove()
+  
+    @refresh()
+
+
+  
+
+  # ----------------------------------
   # RENDER VIEW
   # ----------------------------------
 
@@ -95,6 +196,7 @@ module.exports = class CanvasView extends View
     
     mediator.canvas.stage = mediator.canvas.outer.append('svg:g')
       .attr('id', 'canvas_wrapper')
+      .attr('transform', 'translate(50,50)')
       .call(@zoom)
     
     mediator.canvas.stage.append('svg:rect')
@@ -104,13 +206,13 @@ module.exports = class CanvasView extends View
     mediator.canvas.stage.append('svg:g')
       .attr('class', 'x axis')
       .attr('visibility', 'hidden')
-      .attr('transform', 'translate(0,50)')
+      .attr('transform', 'translate(0,0)')
       .call(xAxis)
     
     mediator.canvas.stage.append('svg:g')
       .attr('class', 'y axis')
       .attr('visibility', 'hidden')
-      .attr('transform', 'translate(50,0)')
+      .attr('transform', 'translate(0,0)')
       .call(yAxis)
       
     mediator.canvas.stage.append('svg:rect')
@@ -135,8 +237,8 @@ module.exports = class CanvasView extends View
     @subscribeEvent 'refresh_canvas', @refresh
     @subscribeEvent 'refresh_zoom', @reset_zoom
 
-    #@init_artifacts()
-    @refresh()
+    @init_artifacts()
+    #@refresh()
     
     if $('#detail').length is 0
       @canvas_width = @$('#canvas_elements')[0].getBoundingClientRect().width
@@ -268,13 +370,13 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   init_artifacts: ->
-    _.each(mediator.nodes.models, (node,i) => 
-      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
-    ) #if mediator.nodes?
-    @subscribeEvent 'node_created', @add_node
-    @subscribeEvent 'node_updated', @update_node
-    @subscribeEvent 'node_removed', @remove_node
-    @build_nodes()
+    #_.each(mediator.nodes.models, (node,i) => 
+    #  force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
+    #) #if mediator.nodes?
+    #@subscribeEvent 'node_created', @add_node
+    #@subscribeEvent 'node_updated', @update_node
+    #@subscribeEvent 'node_removed', @remove_node
+    #@build_nodes()
   
     _.each(mediator.links.models, (link,i) => 
       _source = _.where(force.nodes(), {id: link.get('source')})[0]
@@ -293,77 +395,7 @@ module.exports = class CanvasView extends View
 
 
 
-  # ----------------------------------
-  # NODES
-  # ----------------------------------
 
-  drag_node_start: (d, i) ->
-    mediator.publish 'refresh_canvas'
-    d3.event.sourceEvent.stopPropagation()
-
-  drag_node_move: (d, i) ->
-    d3.event.sourceEvent.stopPropagation()
-    d.rotate = d.model.get('rotate')
-    d.x = d3.event.x
-    d.y = d3.event.y
-    d.px = d.x
-    d.py = d.y
-    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
-
-  drag_node_end: (d, i) ->
-    mediator.publish 'refresh_canvas'
-
-  add_node: (node) ->
-    force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
-    @build_nodes()
-
-  update_node: (node) ->
-    _.each(force.nodes(), (d,i)->
-      if d.id is node.id
-        d.x = node.get('x')
-        d.y = node.get('y') 
-        d.opacity = node.get('opacity')/100
-        d.rotate = node.get('rotate')
-        d.px = d.x
-        d.py = d.y
-    )
-    @refresh()
-
-  remove_node: (node_id) ->
-    _node = _.findWhere(force.nodes(), {id: node_id})
-    _index = force.nodes().indexOf(_node)
-    force.nodes().splice(_index,1)
-    @refresh()
-
-  build_nodes: ->
-  
-    node_drag_events = d3.behavior.drag()
-      .on('dragstart', @drag_node_start)
-      .on('drag', @drag_node_move)
-      .on('dragend', @drag_node_end)
-  
-    mediator.node = mediator.vis
-      .selectAll('g.nodeGroup')
-      .data(force.nodes())
-  
-    mediator.node
-      .enter()
-      .append('svg:g')
-      .attr('class', 'nodeGroup')
-      .attr('cursor', 'pointer')
-      .attr('pointer-events', 'painted')
-      .attr('opacity', (d)-> d.model.get('opacity')/100)
-      .attr('transform', (d)->
-        return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.model.get('rotate') + ')'
-      )
-      .each((d,i)-> d.view = new NodeView({model: d.model, el: @}))
-      .call(node_drag_events)
-  
-    mediator.node
-      .exit()
-      .remove()
-  
-    @refresh()
 
 
 

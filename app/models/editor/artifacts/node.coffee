@@ -1,4 +1,5 @@
-Model = require 'models/base/model'
+#Model = require 'models/base/model'
+PublicNode = require 'models/canvas/artifacts/node'
 
 Paths = require './paths'
 Path = require './path'
@@ -6,7 +7,7 @@ Path = require './path'
 Texts = require './texts'
 Text = require './text'
 
-module.exports = class Node extends Model
+module.exports = class Node extends PublicNode
   defaults:
     x: 0 
     y: 0
@@ -16,19 +17,21 @@ module.exports = class Node extends Model
     nested: [ (new Path).toJSON(), (new Text).toJSON() ]
 
   initialize: (data={}) ->
-    super
+    #super
     _.extend({}, data)
     @build_nested()
 
+  ###
   destroy: ->
-    super
+    #super
     console.log '[NODE DESTROYED]'
     @publishEvent 'node_removed', @id
 
   save: ->
-    super
+    #super
     console.log '[NODE SAVED]'
     @publishEvent 'node_updated', @
+  ###
   
   build_nested: ->
     @paths = new Paths _.where(@get('nested'), {type: 'path'})

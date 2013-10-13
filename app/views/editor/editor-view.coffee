@@ -4,9 +4,9 @@ mediator = require 'mediator'
 #FirebaseCollection = require 'models/base/firebase-collection'
 FirebaseModel = require 'models/base/firebase-model'
 
-#Nodes = require 'models/nodes'
-#Links = require 'models/links'
-#Axes = require 'models/axes'
+Nodes = require 'models/editor/artifacts/nodes'
+#Links = require 'models/editor/artifacts/links'
+#Axes = require 'models/editor/artifacts/axes'
 
 CanvasView         = require 'views/canvas/canvas-view'
 HeaderView         = require './header/header-view'
@@ -25,7 +25,7 @@ MembersDialogView = require './dialog/members-dialog-view'
 module.exports = class EditorView extends CanvasView
   #autoRender: false
   id: 'editor-container'
-  
+    
   initialize: ->
     super
     
@@ -34,6 +34,10 @@ module.exports = class EditorView extends CanvasView
     else
       @model.once 'sync', => 
         @_set_presence()
+
+    mediator.canvas.nodes = new Nodes
+    #mediator.canvas.links = new Links
+    #mediator.canvas.axes = new Axes
 
     @subscribeEvent '!showInvite', @showMembersView
     
@@ -62,9 +66,21 @@ module.exports = class EditorView extends CanvasView
       else
         return !(tagName == 'SELECT' || tagName == 'TEXTAREA')
 
+    
+    console.log mediator.canvas.nodes
+
   render: ->
     super
     console.log 'Rendering EditorView [...]', @model
+    
+    ###
+    @model.firebase.child('actions').on 'child_added', (action) =>
+      if action.val().create?
+        _.each(action.val().create, (d)=>
+          if d['node']? then console.log 'create:node#' + d['node']['id'], d['node']
+        )
+      #@handle_actions action, 'new'
+    ###
     
     @subview 'header-view', new HeaderView model: @model,  region: 'header'
     @subview('header-view').bind 'canvas:update', (data) =>
@@ -76,6 +92,8 @@ module.exports = class EditorView extends CanvasView
     @subview 'tool_view', @toolbar_view = null
     @activate_pointer()
     @$('.controls-container button').tooltip({placement: 'right'})
+
+    @subscribeEvent 'create:node', (data)=> console.log data
 
     @subscribeEvent 'node_created', @refresh_preview
     @subscribeEvent 'node_updated', @refresh_preview

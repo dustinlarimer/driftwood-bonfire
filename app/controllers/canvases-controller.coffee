@@ -34,7 +34,7 @@ module.exports = class CanvasesController extends Controller
           console.log error
         else if committed
           canvas=
-            id: snapshot.val()          
+            id: snapshot.val()
             date_created: new Date().getTime()
             owner_id: owner.user_id
             title: 'Untitled'

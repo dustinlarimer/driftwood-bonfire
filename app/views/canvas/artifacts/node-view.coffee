@@ -1,8 +1,8 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
 
-Path = require 'models/path'
-Text = require 'models/text'
+Path = require 'models/canvas/artifacts/path'
+Text = require 'models/canvas/artifacts/text'
 
 module.exports = class NodeView extends View
   autoRender: true
@@ -127,7 +127,7 @@ module.exports = class NodeView extends View
         .style('stroke-dasharray', '4,1')
     
     #mediator.controls.selectAll('g#node_controls').remove()
-    @controls = mediator.controls
+    @controls = mediator.canvas.controls
       .append('svg:g')
         .attr('id', 'node_controls')
         .attr('transform', (d)=> return 'translate('+ @model.get('x') + ',' + @model.get('y') + ') rotate(' + @model.get('rotate') + ')')
