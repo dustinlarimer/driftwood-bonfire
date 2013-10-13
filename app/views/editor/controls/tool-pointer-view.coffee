@@ -1,8 +1,7 @@
 mediator = require 'mediator'
 utils = require 'lib/utils'
 View = require 'views/base/view'
-Node = require 'models/artifacts/node'
-#zoom_helpers = require '/editor/lib/zoom-helpers'
+Node = require 'models/editor/artifacts/node'
 
 module.exports = class ToolPointerView extends View
 

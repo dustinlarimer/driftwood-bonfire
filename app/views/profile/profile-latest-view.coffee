@@ -4,9 +4,10 @@ template = require './templates/profile-latest'
 
 FirebaseCollection = require 'models/base/firebase-collection'
 Collection = require 'models/base/collection'
+Model = require 'models/base/model'
 
-Canvases = require 'models/canvases'
-Canvas = require 'models/canvas'
+Canvases = require 'models/canvas/canvases'
+Canvas = require 'models/canvas/canvas'
 CanvasesView = require 'views/canvas/canvases-view'
 
 module.exports = class ProfileLatestView extends ProjectView
@@ -24,13 +25,13 @@ module.exports = class ProfileLatestView extends ProjectView
       
       # METHOD 3
       @canvasesRef = Chaplin.mediator.firebase.child('canvases')
-      @collection = new Collection null, model: Canvas
+      @collection = new Collection #null #, model: Canvas
       @collection.sort_descending('id')
       @subview 'canvas-collection', new CanvasesView collection: @collection, region: 'grid'
       
       _.each(_.toArray(@model.get('canvases')), (canvas) =>
         @canvasesRef.child(canvas.id).once 'value', (snapshot) =>
-          @collection.add new Canvas snapshot.val()
+          @collection.add new Model snapshot.val()
       )
       
       # METHOD 1

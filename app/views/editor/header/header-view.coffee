@@ -6,9 +6,8 @@ View = require 'views/base/view'
 FirebaseCollection = require 'models/base/firebase-collection'
 Collection = require 'models/base/collection'
 
-HeaderTitleView = require './header/header-title-view'
-HeaderMembersView = require './header/header-members-view'
-
+HeaderTitleView = require './header-title-view'
+HeaderMembersView = require './header-members-view'
 
 module.exports = class HeaderView extends View
   autoRender: true

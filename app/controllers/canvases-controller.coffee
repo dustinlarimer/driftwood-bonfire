@@ -3,9 +3,11 @@ utils = require 'lib/utils'
 Controller = require './base/controller'
 
 FirebaseModel = require 'models/base/firebase-model'
-Canvas = require 'models/canvas'
 
+Canvas = require 'models/canvas/canvas'
 CanvasView = require 'views/canvas/canvas-view'
+
+EditorCanvas = null
 EditorView = null
 
 module.exports = class CanvasesController extends Controller
@@ -67,10 +69,11 @@ module.exports = class CanvasesController extends Controller
       console.log '[Loading] /javascripts/editor.js'
       utils.loadLib '/javascripts/editor.js', =>
         EditorView = require 'views/editor/editor-view'
+        EditorCanvas = require 'models/editor/editor-canvas'
         @edit(params, route)
     else
       console.log 'EditorController is online'
-      @model = new FirebaseModel {id: params.id}, firebase: config.firebase + '/canvases/' + params.id
+      @model = new EditorCanvas {id: params.id}, firebase: config.firebase + '/canvases/' + params.id
       @view = new EditorView {model: @model}
       @model.on 'change:title', => @adjustTitle @model?.get('title')
       #@model.on 'all', (d,a) => console.log d, a

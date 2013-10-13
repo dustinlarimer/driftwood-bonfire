@@ -1,10 +1,10 @@
 mediator = require 'mediator'
-template = require 'views/editor/templates/detail'
+template = require './templates/detail'
 View = require 'views/base/view'
 
-Node = require 'models/artifacts/node'
-Link = require 'models/artifacts/link'
-Axis = require 'models/artifacts/axis'
+Nodes = require 'models/editor/artifacts/nodes'
+Links = require 'models/editor/artifacts/links'
+Axes = require 'models/editor/artifacts/axes'
 
 DetailPaletteView = require 'views/editor/detail/detail-palette-view'
 DetailCanvasView = require 'views/editor/detail/detail-canvas-view'

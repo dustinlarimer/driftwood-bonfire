@@ -2,8 +2,8 @@ mediator = require 'mediator'
 utils = require 'lib/utils'
 View = require 'views/base/view'
 
-Path = require 'models/artifacts/path'
-Text = require 'models/artifacts/text'
+Path = require 'models/editor/artifacts/path'
+Text = require 'models/editor/artifacts/text'
 
 module.exports = class ToolNodeView extends View
   

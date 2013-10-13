@@ -4,10 +4,14 @@ mediator = require 'mediator'
 #FirebaseCollection = require 'models/base/firebase-collection'
 FirebaseModel = require 'models/base/firebase-model'
 
-CanvasView = require 'views/canvas/canvas-view'
-HeaderView = require './header-view'
-DetailView = require './detail-view'
-ControlsView = require './controls-view'
+#Nodes = require 'models/nodes'
+#Links = require 'models/links'
+#Axes = require 'models/axes'
+
+CanvasView         = require 'views/canvas/canvas-view'
+HeaderView         = require './header/header-view'
+DetailView         = require './detail/detail-view'
+ControlsView       = require './controls/controls-view'
 
 ToolPointerView    = require './controls/tool-pointer-view'
 ToolNodeView       = require './controls/tool-node-view'
@@ -138,8 +142,7 @@ module.exports = class EditorView extends CanvasView
     @toolbar_view = new ToolNodeView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     @subview('tool_view').bind 'create:node', (data) =>
-      console.log 'Creating a node ', data
-      #mediator.nodes.create _node, {wait: true}
+      @model.create_node data
     return false
 
   activate_link: =>
@@ -224,6 +227,10 @@ module.exports = class EditorView extends CanvasView
 
 
   refresh_preview: =>
+    # TEMP #
+    return false
+    
+    
     if @refresh_timeout?
       clearTimeout @refresh_timeout 
       @refresh_timeout = null

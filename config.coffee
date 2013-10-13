@@ -3,8 +3,8 @@ exports.config =
   files:
     javascripts:
       joinTo:
-        'javascripts/editor.js'     : /^app(\/|\\)views(\/|\\)editor/
-        'javascripts/app.js'        : /^app(\/|\\)(?!views(\/|\\)editor)/
+        'javascripts/editor.js'     : /^app(\/|\\)(views|models)(\/|\\)editor/
+        'javascripts/app.js'        : /^app(\/|\\)(?!(views(\/|\\)editor)|models(\/|\\)editor)/
         'javascripts/vendor.js'     : /^(?!app)/
 
     stylesheets:

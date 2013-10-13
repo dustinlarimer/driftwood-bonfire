@@ -1,5 +1,5 @@
 mediator = require 'mediator'
-template = require 'views/editor/templates/controls'
+template = require './templates/controls'
 View = require 'views/base/view'
 
 module.exports = class ControlsView extends View

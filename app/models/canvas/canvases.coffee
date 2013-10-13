@@ -1,6 +1,6 @@
 config = require 'config'
 Collection = require 'models/base/collection'
-Canvas = require 'models/canvas'
+Canvas = require 'models/canvas/canvas'
 
 module.exports = class Users extends Collection
   model: Canvas
