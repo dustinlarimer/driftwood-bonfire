@@ -83,6 +83,19 @@ module.exports = class CanvasView extends View
   force = d3.layout.force()
 
 
+  force.on 'tick', ->
+    
+    #if mediator.canvas.node?
+    #  mediator.canvas.node
+    d3.select('g.nodeGroup.passive')
+      .transition()
+      .ease('linear')
+      .attr('opacity', (d)-> d.opacity)
+      .attr('transform', (d)->
+        return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')'
+      )
+
+
   # ----------------------------------
   # Initialize Artifacts
   # ----------------------------------
@@ -160,6 +173,7 @@ module.exports = class CanvasView extends View
       .attr('transform', (d)->
         return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.model.get('rotate') + ')'
       )
+      .classed('passive', true)
       .each((d,i)-> d.view = new NodeView({model: d.model, el: @}))
       .call(node_drag_events)
   
@@ -196,7 +210,6 @@ module.exports = class CanvasView extends View
     
     mediator.canvas.stage = mediator.canvas.outer.append('svg:g')
       .attr('id', 'canvas_wrapper')
-      .attr('transform', 'translate(50,50)')
       .call(@zoom)
     
     mediator.canvas.stage.append('svg:rect')
@@ -242,7 +255,7 @@ module.exports = class CanvasView extends View
     
     if $('#detail').length is 0
       @canvas_width = @$('#canvas_elements')[0].getBoundingClientRect().width
-      @visual_offset = (bounds.width - 940) / 2
+      @visual_offset = 0 #(bounds.width - 940) / 2
       if @canvas_width < bounds.width
         @zoom.scale(1).translate([@visual_offset,0])
         mediator.canvas.vis.attr('transform', 'translate(' + @visual_offset + ',' + 0 + ')')

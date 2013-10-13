@@ -20,8 +20,11 @@ module.exports = class Node extends PublicNode
     #super
     _.extend({}, data)
     @build_nested()
+  
+  set: ->
+    super
+    @publishEvent 'node_updated', @
 
-  ###
   destroy: ->
     #super
     console.log '[NODE DESTROYED]'
@@ -31,7 +34,7 @@ module.exports = class Node extends PublicNode
     #super
     console.log '[NODE SAVED]'
     @publishEvent 'node_updated', @
-  ###
+
   
   build_nested: ->
     @paths = new Paths _.where(@get('nested'), {type: 'path'})

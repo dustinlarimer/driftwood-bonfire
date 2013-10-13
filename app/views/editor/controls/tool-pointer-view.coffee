@@ -197,7 +197,9 @@ module.exports = class ToolPointerView extends View
     e = d3.event.sourceEvent
     e.stopPropagation()
     coordinates = utils.get_coordinates(e)
-
+    
+    d3.select(d.view.el).classed('passive', false)
+    
     mediator.publish 'refresh_canvas' #'pause_canvas'    
     @active_node_target = d3.select(d3.event.sourceEvent.target.parentElement).data()[0]
     if mediator.selected_node?.id is d.id
@@ -240,8 +242,11 @@ module.exports = class ToolPointerView extends View
     d3.select(@nodes[0][i]).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
   
   node_drag_stop: (d, i) =>
+    d3.select(d.view.el).classed('passive', true)
+    
     if @node_motion
-      d.model.save x: d.x, y: d.y
+      @trigger 'update:node', {model: d.model, attributes: {x: d.x, y: d.y}}
+      #d.model.save x: d.x, y: d.y
       d.view.activate()
     else
       if key.shift

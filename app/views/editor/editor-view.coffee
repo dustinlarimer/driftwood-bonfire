@@ -72,7 +72,7 @@ module.exports = class EditorView extends CanvasView
   render: ->
     super
     console.log 'Rendering EditorView [...]', @model
-    
+    mediator.canvas.stage.attr('transform', 'translate(50,50)')
     ###
     @model.firebase.child('actions').on 'child_added', (action) =>
       if action.val().create?
@@ -91,9 +91,16 @@ module.exports = class EditorView extends CanvasView
     @subview 'controls_view', new ControlsView model: mediator.current_user.profile, region: 'controls'
     @subview 'tool_view', @toolbar_view = null
     @activate_pointer()
+    
+    #@subview('tool_view').bind 'create:node', (data) =>
+    #  @model.create_node data
+    
+    
+    
+    
     @$('.controls-container button').tooltip({placement: 'right'})
 
-    @subscribeEvent 'create:node', (data)=> console.log data
+    #@subscribeEvent 'create:node', (data)=> console.log data
 
     @subscribeEvent 'node_created', @refresh_preview
     @subscribeEvent 'node_updated', @refresh_preview
@@ -146,6 +153,8 @@ module.exports = class EditorView extends CanvasView
     @removeSubview 'tool_view'
     @toolbar_view = new ToolPointerView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
+    @subview('tool_view').bind 'update:node', (data) =>
+      @model.update_node data
     return false
 
   activate_node: =>

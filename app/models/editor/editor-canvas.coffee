@@ -14,10 +14,15 @@ module.exports = class EditorCanvas extends Canvas
     @once 'sync', ->
       @firebase.child('actions').on 'child_added', (action) =>
         if action.val().create?
-          _.each(action.val().create, (d)=>
-            if d['node']? then mediator.canvas.nodes.add new Node _.extend {id: d['node']['id']}, d['node']['_new']
-            #console.log 'create:node#' + d['node']['id'], d['node']
+          _.each(action.val().create, (d) =>
+            if d['node']? then mediator.canvas.nodes?.add new Node _.extend {id: d['node']['id']}, d['node']['_new']
           )
+        if action.val().update?
+          _.each(action.val().update, (d) =>
+            console.log d['node']['_new']
+            if d['node']? then mediator.canvas.nodes?.get(d['node']['id'])?.set d['node']['_new']
+          )
+
 
   create_node: (data) =>
     @firebase.child('artifacts/count').transaction ((count) =>
@@ -37,7 +42,35 @@ module.exports = class EditorCanvas extends Canvas
             ]
           console.log 'Set new action: ', action.name()
           #@handle_actions action, 'new'
-          
+
+  update_node: (data) =>
+    _previous_attributes = _.pick(data.model.attributes, _.keys(data.attributes))
+    action = @firebase.child('actions').push()
+    #_update = ['node': {id: data.model.get('id'), _new: data.attributes, _rev: _previous_attributes }]
+    #action.set {update: _update}
+    action.set
+      update: [
+        'node':
+          id: data.model.get('id')
+          _new: data.attributes
+          _rev: _previous_attributes
+      ]
+    
+    #_.each(data.model.attributes, (d)->)
+    ###
+    action = @firebase.child('actions').push()
+    action.set
+      update: [
+        'node':
+          id: data.id
+          _new:
+            x: data.x
+            y: data.y
+          _rev:
+            x: data.px
+            y: data.py
+      ]
+    ###   
     #console.log @firebase.child('actions').transaction ((count) =>
     # actions: [{action}, {action}]
     # artifacts: { count: 21, nodes: 13, links: 6, axes: 2, layers: [{ID}, {ID}, {ID}] }
