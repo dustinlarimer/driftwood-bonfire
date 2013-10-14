@@ -25,10 +25,6 @@ module.exports = class HeaderView extends View
     @profilesRef = Chaplin.mediator.firebase.child('profiles')
     @delegate 'change', '#canvas-attr-title', @update_canvas
     @delegate 'submit', 'form', -> return false
-    
-    #@subscribeEvent 'create:node#5', (message) ->
-    #  console.log message
-    #  console.log 'caught it!'
 
   render: ->
     super

@@ -5,9 +5,10 @@ Node = require 'models/editor/artifacts/node'
 
 module.exports = class ToolPointerView extends View
 
-  initialize: ->
+  initialize: (data={}) ->
     super
     console.log '[-- Pointer tool activated --]'
+    @parent = data.parent
     
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-pointer').addClass('active')
@@ -198,8 +199,6 @@ module.exports = class ToolPointerView extends View
     e.stopPropagation()
     coordinates = utils.get_coordinates(e)
     
-    d3.select(d.view.el).classed('ready', false)
-    
     mediator.publish 'refresh_canvas' #'pause_canvas'    
     @active_node_target = d3.select(d3.event.sourceEvent.target.parentElement).data()[0]
     if mediator.selected_node?.id is d.id
@@ -216,6 +215,7 @@ module.exports = class ToolPointerView extends View
 
   node_drag_move: (d, i) =>
     d3.event.sourceEvent.stopPropagation()
+    @parent.force.tick()
     @node_motion = true
     rel_x = d3.event.x + @mousedown_offset.x
     rel_y = d3.event.y + @mousedown_offset.y
@@ -242,7 +242,7 @@ module.exports = class ToolPointerView extends View
     d3.select(@nodes[0][i]).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
   
   node_drag_stop: (d, i) =>
-    d3.select(d.view.el).classed('ready', true)
+    #d3.select(d.view.el).classed('ready', true)
     if @node_motion
       @trigger 'update:node', {model: d.model, attributes: {x: d.x, y: d.y}}
       #d.model.save x: d.x, y: d.y
@@ -262,6 +262,7 @@ module.exports = class ToolPointerView extends View
 
     @reset()
     mediator.publish 'activate_detail', d.model
+    @parent.force.start()
     #mediator.publish 'refresh_canvas'
 
   destroy_node_group: (node_group) ->

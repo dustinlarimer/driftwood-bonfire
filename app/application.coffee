@@ -10,6 +10,7 @@ module.exports = class Application extends Chaplin.Application
     @layout = new Layout options
 
   initMediator: ->
+    #Firebase.enableLogging(true)
     mediator.firebase = new Firebase(config.firebase)
     mediator.users = null
     mediator.current_user = null

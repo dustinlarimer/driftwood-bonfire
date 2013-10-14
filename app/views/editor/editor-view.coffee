@@ -4,7 +4,12 @@ mediator = require 'mediator'
 #FirebaseCollection = require 'models/base/firebase-collection'
 FirebaseModel = require 'models/base/firebase-model'
 
+Nodes = require 'models/editor/artifacts/nodes'
+Node = require 'models/editor/artifacts/node'
+
+#View = require 'views/base/view'
 CanvasView         = require 'views/canvas/canvas-view'
+
 HeaderView         = require './header/header-view'
 DetailView         = require './detail/detail-view'
 ControlsView       = require './controls/controls-view'
@@ -20,15 +25,11 @@ MembersDialogView = require './dialog/members-dialog-view'
 
 module.exports = class EditorView extends CanvasView
   id: 'editor-container'
-    
+  
   initialize: ->
     super
     
-    #@_set_presence()
-    if @model?.get('id')?
-      @_set_presence()
-    else
-      @model.once 'sync', => @_set_presence()
+    @_set_presence()
 
     @delegate 'click', '#tool-pointer',    @activate_pointer
     @delegate 'click', '#tool-node',       @activate_node
@@ -71,25 +72,58 @@ module.exports = class EditorView extends CanvasView
     @subscribeEvent 'axis_removed', @refresh_preview
     ###
 
+  dispose: ->
+    @_clear_presence()
+    super
+
   render: ->
     super
-    console.log 'Rendering EditorView [...]', @model
+    mediator.canvas.nodes = new Nodes
     mediator.canvas.stage.attr('transform', 'translate(50,50)')
     
     @subview 'header-view', new HeaderView model: @model, region: 'header'
     @subview('header-view').bind 'canvas:update', (data) =>
       @model.set data
     
+    @dir = '_new'
+    
+    @model.firebase.child('actions').on 'child_added', (action) =>
+      #console.log '[»]', action.val()
+      
+      if action.val().create? and @dir is '_new' or action.val().remove? and @dir is '_rev'
+        _.each(action.val().create, (d) =>
+          if d['node']? then mediator.canvas.nodes.add new Node _.extend {id: d['node']['id']}, d['node'][@dir]
+        )
+      
+      if action.val().update?
+        _.each(action.val().update, (d) =>
+          #console.log 'Updating Node#' + d['node']['id'], d['node'][@dir]
+          if d['node']? then mediator.canvas.nodes.get(d['node']['id'])?.set d['node'][@dir]
+        )
+      
+      if action.val().remove? and @dir is '_new' or action.val().create? and @dir is '_rev'
+        _.each(action.val().remove, (d) =>
+          if d['node']? then mediator.canvas.nodes.remove(d['node'])
+        )
+      
     @subview 'controls_view', new ControlsView region: 'controls'
     @subview 'tool_view', @toolbar_view = null
-    @model.once 'sync', => @activate_pointer()
+    @activate_pointer()
     
     #@subview 'detail_view', new DetailView model: null, region: 'detail'
+    
+    @force.on 'tick', ->
+      #console.log '[tick]'
+      if mediator.canvas.node?
+        mediator.canvas.node
+          #.transition()
+          #.ease('linear')
+          .attr('opacity', (d)-> d.opacity)
+          .attr('transform', (d)->
+            return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')'
+          )
 
   _set_presence: =>
-    #@current_status = new FirebaseModel {id: mediator.current_user.get('id')},
-    #  firebase: config.firebase + '/canvases/' + @model.get('id') + '/members/' + mediator.current_user.get('id')
-    
     @presenceRef = @model.firebase.child('members').child(mediator.current_user.get('id'))
     @connectedRef = mediator.firebase.child('.info/connected')
     @connectedRef.on 'value', (snapshot) =>
@@ -100,17 +134,11 @@ module.exports = class EditorView extends CanvasView
         @presenceRef.update
           online: true
           latest: Firebase.ServerValue.TIMESTAMP
-      else
-        console.log 'not here yet!'
 
   _clear_presence: =>
     @presenceRef.update
       online: false
       latest: Firebase.ServerValue.TIMESTAMP
-
-  dispose: ->
-    @_clear_presence()
-    super
     
 
   # ----------------------------------
@@ -119,7 +147,7 @@ module.exports = class EditorView extends CanvasView
 
   activate_pointer: =>
     @removeSubview 'tool_view'
-    @toolbar_view = new ToolPointerView el: $('svg', @el)
+    @toolbar_view = new ToolPointerView el: $('svg', @el), parent: @
     @subview 'tool_view', @toolbar_view
     @subview('tool_view').bind 'update:node', (data) =>
       @model.update_node data

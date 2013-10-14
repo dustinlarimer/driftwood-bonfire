@@ -12,7 +12,7 @@ NodeView = require 'views/canvas/artifacts/node-view'
 
 module.exports = class CanvasView extends View
   autoRender: true
-  container: 'body'
+  container: '#app-container'
   containerMethod: 'html'
   className: 'canvas-container'
   id: 'canvas-container'
@@ -80,29 +80,19 @@ module.exports = class CanvasView extends View
     .tickSubdivide(5)
 
 
-  force = d3.layout.force()
+  #@force = d3.layout.force()
 
-  force.on 'tick', ->
-    #
-    #d3.select('g.nodeGroup.ready')
-    if mediator.canvas.node?
-      mediator.canvas.node
-        .transition()
-        .ease('linear')
-        .attr('opacity', (d)-> d.opacity)
-        .attr('transform', (d)->
-          return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')'
-        )
+  
 
 
   # ----------------------------------
   # Initialize Artifacts
   # ----------------------------------
 
-  init_artifacts: ->
+  init_artifacts: =>
     _.each(mediator.canvas.nodes.models, (node,i) => 
       console.log '--->', node
-      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
+      @force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
     ) #if mediator.nodes?
     @subscribeEvent 'node_created', @add_node
     @subscribeEvent 'node_updated', @update_node
@@ -131,11 +121,11 @@ module.exports = class CanvasView extends View
     mediator.publish 'refresh_canvas'
 
   add_node: (node) ->
-    force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
+    @force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
     @build_nodes()
 
   update_node: (node) ->
-    _.each(force.nodes(), (d,i)->
+    _.each(@force.nodes(), (d,i)->
       if d.id is node.id
         d.x = node.get('x')
         d.y = node.get('y') 
@@ -147,9 +137,9 @@ module.exports = class CanvasView extends View
     @refresh()
 
   remove_node: (node_id) ->
-    _node = _.findWhere(force.nodes(), {id: node_id})
-    _index = force.nodes().indexOf(_node)
-    force.nodes().splice(_index,1)
+    _node = _.findWhere(@force.nodes(), {id: node_id})
+    _index = @force.nodes().indexOf(_node)
+    @force.nodes().splice(_index,1)
     @refresh()
 
 
@@ -162,7 +152,7 @@ module.exports = class CanvasView extends View
   
     mediator.canvas.node = mediator.canvas.vis
       .selectAll('g.nodeGroup')
-      .data(force.nodes())
+      .data(@force.nodes())
   
     mediator.canvas.node
       .enter()
@@ -193,7 +183,7 @@ module.exports = class CanvasView extends View
 
   render: ->
     super
-    console.log 'Rendering CanvasView [...]'
+    #console.log 'Rendering CanvasView [...]'
 
     @zoom = d3.behavior.zoom()
       .x(x)
@@ -242,16 +232,32 @@ module.exports = class CanvasView extends View
     mediator.canvas.controls = mediator.canvas.stage.append('svg:g')
       .attr('id', 'canvas_controls')
 
-    force
+    @force = d3.layout.force()
+    @force
       .charge(0)
       .gravity(0)
       .linkStrength(0)
       .size([bounds.width, bounds.height])
+    
+    @force.on 'tick', ->
+      if mediator.canvas.node?
+        mediator.canvas.node
+          .transition()
+          .ease('linear')
+          .attr('opacity', (d)-> d.opacity)
+          .attr('transform', (d)->
+            return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')'
+          )
 
+    #@init_artifacts()
     @subscribeEvent 'refresh_canvas', @refresh
     @subscribeEvent 'refresh_zoom', @reset_zoom
 
-    @model.once 'sync', => @init_artifacts()
+    @subscribeEvent 'node_created', @add_node
+    @subscribeEvent 'node_updated', @update_node
+    @build_nodes()
+    #@model.once 'sync', => @init_artifacts()
+    
     #@refresh()
     
     if $('#detail').length is 0
@@ -289,7 +295,7 @@ module.exports = class CanvasView extends View
       .attr('width', bounds.width)
     @$('#detail-wrapper').css('min-height', bounds.height)
 
-    force
+    @force
       .size([bounds.width, bounds.height])
       .start()
   

@@ -73,7 +73,9 @@ module.exports = class CanvasesController extends Controller
         @edit(params, route)
     else
       console.log 'EditorController is online'
-      @model = new EditorCanvas {id: params.id}, firebase: config.firebase + '/canvases/' + params.id
-      @view = new EditorView {model: @model}
-      @model.on 'change:title', => @adjustTitle @model?.get('title')
-      @model.on 'all', (d,a) => console.log d, a
+      @canvasesRef = Chaplin.mediator.firebase.child('canvases')
+      @canvasesRef.child(params.id).once 'value', (snapshot) =>
+        #console.log snapshot.val()
+        @model = new EditorCanvas snapshot.val(), firebase: config.firebase + '/canvases/' + params.id + '/'
+        @view = new EditorView {model: @model}
+        @model.on 'change:title', => @adjustTitle @model?.get('title')

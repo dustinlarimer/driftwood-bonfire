@@ -5,7 +5,7 @@ ProfileHeaderView = require 'views/profile/profile-header-view'
 
 module.exports = class ProfileView extends View
   autoRender: true
-  container: 'body'
+  container: '#app-container'
   id: 'profile-container'
   regions:
     header: '#header-container'
