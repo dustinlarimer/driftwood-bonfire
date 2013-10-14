@@ -243,7 +243,6 @@ module.exports = class ToolPointerView extends View
   
   node_drag_stop: (d, i) =>
     d3.select(d.view.el).classed('passive', true)
-    
     if @node_motion
       @trigger 'update:node', {model: d.model, attributes: {x: d.x, y: d.y}}
       #d.model.save x: d.x, y: d.y

@@ -102,6 +102,7 @@ module.exports = class CanvasView extends View
 
   init_artifacts: ->
     _.each(mediator.canvas.nodes.models, (node,i) => 
+      console.log '--->', node
       force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
     ) #if mediator.nodes?
     @subscribeEvent 'node_created', @add_node
@@ -250,7 +251,7 @@ module.exports = class CanvasView extends View
     @subscribeEvent 'refresh_canvas', @refresh
     @subscribeEvent 'refresh_zoom', @reset_zoom
 
-    @init_artifacts()
+    @model.once 'sync', => @init_artifacts()
     #@refresh()
     
     if $('#detail').length is 0

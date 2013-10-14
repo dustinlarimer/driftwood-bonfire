@@ -66,9 +66,6 @@ module.exports = class EditorView extends CanvasView
       else
         return !(tagName == 'SELECT' || tagName == 'TEXTAREA')
 
-    
-    console.log mediator.canvas.nodes
-
   render: ->
     super
     console.log 'Rendering EditorView [...]', @model
@@ -91,16 +88,7 @@ module.exports = class EditorView extends CanvasView
     @subview 'controls_view', new ControlsView model: mediator.current_user.profile, region: 'controls'
     @subview 'tool_view', @toolbar_view = null
     @activate_pointer()
-    
-    #@subview('tool_view').bind 'create:node', (data) =>
-    #  @model.create_node data
-    
-    
-    
-    
     @$('.controls-container button').tooltip({placement: 'right'})
-
-    #@subscribeEvent 'create:node', (data)=> console.log data
 
     @subscribeEvent 'node_created', @refresh_preview
     @subscribeEvent 'node_updated', @refresh_preview
@@ -113,10 +101,6 @@ module.exports = class EditorView extends CanvasView
     @subscribeEvent 'axis_created', @refresh_preview
     @subscribeEvent 'axis_updated', @refresh_preview
     @subscribeEvent 'axis_removed', @refresh_preview
-    
-    #setInterval =>
-    #  @publishEvent 'update:node#5', {message: 'get it?'}
-    #, 2500
 
   _set_presence: =>
     #@current_status = new FirebaseModel {id: mediator.current_user.get('id')},
