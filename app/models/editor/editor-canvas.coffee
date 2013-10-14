@@ -3,28 +3,37 @@ mediator = require 'mediator'
 
 Canvas = require 'models/canvas/canvas'
 Node = require 'models/editor/artifacts/node'
+
+Nodes = require 'models/editor/artifacts/nodes'
 #Links = require 'models/editor/artifacts/links'
 #Axes = require 'models/editor/artifacts/axes'
 
 module.exports = class EditorCanvas extends Canvas
   
-  initialize: ->
+  initialize: (data={}) ->
     super
+    console.log data
     @dir = '_new'
-    @once 'sync', =>
-      @firebase.child('actions').on 'child_added', (action) =>
-        
-        if action.val().create? and @dir is '_new' or action.val().remove? and @dir is '_rev'
-          _.each(action.val().create, (d) =>
-            if d['node']? then mediator.canvas.nodes?.add new Node _.extend {id: d['node']['id']}, d['node'][@dir]
-          )
-        
-        if action.val().update?
-          _.each(action.val().update, (d) =>
-            console.log 'Updating Node#' + d['node']['id'], d['node'][@dir]
-            if d['node']?
-              mediator.canvas.nodes?.get(d['node']['id'])?.set d['node'][@dir]
-          )
+    
+    mediator.canvas.nodes = new Nodes
+    #mediator.canvas.links = new Links
+    #mediator.canvas.axes = new Axes
+    
+    #@once 'sync', =>
+    @firebase = new Firebase(config.firebase + '/canvases/' + data.id)
+    @firebase.child('actions').on 'child_added', (action) =>
+      
+      if action.val().create? and @dir is '_new' or action.val().remove? and @dir is '_rev'
+        _.each(action.val().create, (d) =>
+          if d['node']? then mediator.canvas.nodes?.add new Node _.extend {id: d['node']['id']}, d['node'][@dir]
+        )
+      
+      if action.val().update?
+        _.each(action.val().update, (d) =>
+          console.log 'Updating Node#' + d['node']['id'], d['node'][@dir]
+          if d['node']?
+            mediator.canvas.nodes?.get(d['node']['id'])?.set d['node'][@dir]
+        )
 
 
   create_node: (data) =>

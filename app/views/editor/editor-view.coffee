@@ -4,10 +4,6 @@ mediator = require 'mediator'
 #FirebaseCollection = require 'models/base/firebase-collection'
 FirebaseModel = require 'models/base/firebase-model'
 
-Nodes = require 'models/editor/artifacts/nodes'
-#Links = require 'models/editor/artifacts/links'
-#Axes = require 'models/editor/artifacts/axes'
-
 CanvasView         = require 'views/canvas/canvas-view'
 HeaderView         = require './header/header-view'
 DetailView         = require './detail/detail-view'
@@ -28,21 +24,12 @@ module.exports = class EditorView extends CanvasView
   initialize: ->
     super
     
-    @_set_presence()
-    ###
+    #@_set_presence()
     if @model?.get('id')?
       @_set_presence()
     else
-      @model.once 'sync', => 
-        @_set_presence()
-    ###
-    
-    mediator.canvas.nodes = new Nodes
-    #mediator.canvas.links = new Links
-    #mediator.canvas.axes = new Axes
+      @model.once 'sync', => @_set_presence()
 
-    @subscribeEvent '!showInvite', @showMembersView
-    
     @delegate 'click', '#tool-pointer',    @activate_pointer
     @delegate 'click', '#tool-node',       @activate_node
     @delegate 'click', '#tool-link',       @activate_link
@@ -68,6 +55,8 @@ module.exports = class EditorView extends CanvasView
       else
         return !(tagName == 'SELECT' || tagName == 'TEXTAREA')
 
+    @subscribeEvent '!showInvite', @showMembersView
+    
     ###
     @subscribeEvent 'node_created', @refresh_preview
     @subscribeEvent 'node_updated', @refresh_preview

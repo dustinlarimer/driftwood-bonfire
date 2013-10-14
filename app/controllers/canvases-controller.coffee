@@ -76,4 +76,4 @@ module.exports = class CanvasesController extends Controller
       @model = new EditorCanvas {id: params.id}, firebase: config.firebase + '/canvases/' + params.id
       @view = new EditorView {model: @model}
       @model.on 'change:title', => @adjustTitle @model?.get('title')
-      #@model.on 'all', (d,a) => console.log d, a
+      @model.on 'all', (d,a) => console.log d, a

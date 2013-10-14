@@ -83,6 +83,7 @@ module.exports = class CanvasView extends View
   force = d3.layout.force()
 
   force.on 'tick', ->
+    #
     #d3.select('g.nodeGroup.ready')
     if mediator.canvas.node?
       mediator.canvas.node
@@ -269,7 +270,7 @@ module.exports = class CanvasView extends View
 
   refresh: =>
 
-    @editor_offset = (@$('#detail').width()*1.3) or 0
+    @editor_offset = 0 #(@$('#detail').width()*1.3) or 0
     @canvas_elements = @$('#canvas_elements')[0].getBoundingClientRect()
 
     bounds.x = @canvas_elements.width + @editor_offset
