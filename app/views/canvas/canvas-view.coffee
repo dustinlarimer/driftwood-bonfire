@@ -82,18 +82,16 @@ module.exports = class CanvasView extends View
 
   force = d3.layout.force()
 
-
   force.on 'tick', ->
-    
-    #if mediator.canvas.node?
-    #  mediator.canvas.node
-    d3.select('g.nodeGroup.passive')
-      .transition()
-      .ease('linear')
-      .attr('opacity', (d)-> d.opacity)
-      .attr('transform', (d)->
-        return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')'
-      )
+    #d3.select('g.nodeGroup.ready')
+    if mediator.canvas.node?
+      mediator.canvas.node
+        .transition()
+        .ease('linear')
+        .attr('opacity', (d)-> d.opacity)
+        .attr('transform', (d)->
+          return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')'
+        )
 
 
   # ----------------------------------
@@ -153,6 +151,7 @@ module.exports = class CanvasView extends View
     force.nodes().splice(_index,1)
     @refresh()
 
+
   build_nodes: ->
   
     node_drag_events = d3.behavior.drag()
@@ -174,7 +173,7 @@ module.exports = class CanvasView extends View
       .attr('transform', (d)->
         return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.model.get('rotate') + ')'
       )
-      .classed('passive', true)
+      .classed('ready', true)
       .each((d,i)-> d.view = new NodeView({model: d.model, el: @}))
       .call(node_drag_events)
   

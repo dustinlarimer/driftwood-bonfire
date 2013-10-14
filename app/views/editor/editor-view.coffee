@@ -23,18 +23,20 @@ ToolEyedropperView = require './controls/tool-eyedropper-view'
 MembersDialogView = require './dialog/members-dialog-view'
 
 module.exports = class EditorView extends CanvasView
-  #autoRender: false
   id: 'editor-container'
     
   initialize: ->
     super
     
+    @_set_presence()
+    ###
     if @model?.get('id')?
       @_set_presence()
     else
       @model.once 'sync', => 
         @_set_presence()
-
+    ###
+    
     mediator.canvas.nodes = new Nodes
     #mediator.canvas.links = new Links
     #mediator.canvas.axes = new Axes
@@ -66,30 +68,7 @@ module.exports = class EditorView extends CanvasView
       else
         return !(tagName == 'SELECT' || tagName == 'TEXTAREA')
 
-  render: ->
-    super
-    console.log 'Rendering EditorView [...]', @model
-    mediator.canvas.stage.attr('transform', 'translate(50,50)')
     ###
-    @model.firebase.child('actions').on 'child_added', (action) =>
-      if action.val().create?
-        _.each(action.val().create, (d)=>
-          if d['node']? then console.log 'create:node#' + d['node']['id'], d['node']
-        )
-      #@handle_actions action, 'new'
-    ###
-    
-    @subview 'header-view', new HeaderView model: @model,  region: 'header'
-    @subview('header-view').bind 'canvas:update', (data) =>
-      @model.set data
-    
-    #@subview 'detail_view', new DetailView model: null, region: 'detail'
-    
-    @subview 'controls_view', new ControlsView model: mediator.current_user.profile, region: 'controls'
-    @subview 'tool_view', @toolbar_view = null
-    @activate_pointer()
-    @$('.controls-container button').tooltip({placement: 'right'})
-
     @subscribeEvent 'node_created', @refresh_preview
     @subscribeEvent 'node_updated', @refresh_preview
     @subscribeEvent 'node_removed', @refresh_preview
@@ -101,6 +80,22 @@ module.exports = class EditorView extends CanvasView
     @subscribeEvent 'axis_created', @refresh_preview
     @subscribeEvent 'axis_updated', @refresh_preview
     @subscribeEvent 'axis_removed', @refresh_preview
+    ###
+
+  render: ->
+    super
+    console.log 'Rendering EditorView [...]', @model
+    mediator.canvas.stage.attr('transform', 'translate(50,50)')
+    
+    @subview 'header-view', new HeaderView model: @model, region: 'header'
+    @subview('header-view').bind 'canvas:update', (data) =>
+      @model.set data
+    
+    @subview 'controls_view', new ControlsView region: 'controls'
+    @subview 'tool_view', @toolbar_view = null
+    @model.once 'sync', => @activate_pointer()
+    
+    #@subview 'detail_view', new DetailView model: null, region: 'detail'
 
   _set_presence: =>
     #@current_status = new FirebaseModel {id: mediator.current_user.get('id')},
